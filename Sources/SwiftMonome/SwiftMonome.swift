@@ -1,6 +1,5 @@
 import clibmonome
 
-//public typealias MonomeEventCallback = monome_event_callback_t
 public typealias MonomeEventCallback = ((Monome, EventProtocol) -> Void)
 
 public final class Monome {
@@ -63,8 +62,8 @@ public final class Monome {
     }
 
     // MARK: - Public
-    public func registerHandler(for eventType: EventType, callback: MonomeEventCallback) {
-
+    public func registerHandler(for eventType: EventType, callback: @escaping MonomeEventCallback) {
+        eventHandlers[eventType] = callback
     }
     public func eventHandleNext() {
         monome_event_handle_next(monome)
@@ -72,7 +71,12 @@ public final class Monome {
 
     // MARK: - Private
     fileprivate func _handle(event: EventProtocol) {
-        print(event)
+        let handlers = eventHandlers.filter { (key, value) -> Bool in
+            return event.type == key
+        }
+        handlers.values.forEach { handler in
+            handler(self, event)
+        }
     }
 }
 
