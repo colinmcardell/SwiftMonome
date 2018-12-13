@@ -1,0 +1,6 @@
+module clibmonome {
+  header "/usr/local/include/monome.h"
+  header "clibmonome.h"
+  export *
+  link "libmonome"
+}
