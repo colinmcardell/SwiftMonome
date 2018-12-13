@@ -154,3 +154,8 @@ public struct TiltEvent: EventProtocol {
         return event.pointee.tilt.z
     }
 }
+
+public enum MonomeLedStatus: UInt32 {
+    case on = 0
+    case off = 1
+}

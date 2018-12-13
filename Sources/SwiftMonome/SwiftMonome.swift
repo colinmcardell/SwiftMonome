@@ -68,6 +68,16 @@ public final class Monome {
     public func eventHandleNext() {
         monome_event_handle_next(monome)
     }
+    // Grid Commands
+    public func ledSet(x: UInt32, y: UInt32, status: MonomeLedStatus) {
+        monome_led_set(monome, x, y, status.rawValue)
+    }
+    public func ledOn(x: UInt32, y: UInt32) {
+        monome_led_on(monome, x, y)
+    }
+    public func ledOff(x: UInt32, y: UInt32) {
+        monome_led_off(monome, x, y)
+    }
 
     // MARK: - Private
     fileprivate func _handle(event: EventProtocol) {
