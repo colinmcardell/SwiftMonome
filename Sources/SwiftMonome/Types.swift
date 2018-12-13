@@ -39,31 +39,28 @@ extension EventType {
 }
 
 public enum Rotation {
-    case left
-    case bottom
-    case right
-    case top
+    case Left
+    case Bottom
+    case Right
+    case Top
 }
 
 extension Rotation {
-    init() {
-        self = .left
-    }
     init(_ rotation: monome_rotate_t) {
         switch rotation {
-        case MONOME_ROTATE_0: self = .left
-        case MONOME_ROTATE_90: self = .bottom
-        case MONOME_ROTATE_180: self = .right
-        case MONOME_ROTATE_270: self = .top
-        default: self = .left
+        case MONOME_ROTATE_0: self = .Left
+        case MONOME_ROTATE_90: self = .Bottom
+        case MONOME_ROTATE_180: self = .Right
+        case MONOME_ROTATE_270: self = .Top
+        default: self = .Left
         }
     }
     var cRotation: monome_rotate_t {
         switch self {
-        case .left: return MONOME_ROTATE_0
-        case .bottom: return MONOME_ROTATE_90
-        case .right: return MONOME_ROTATE_180
-        case .top: return MONOME_ROTATE_270
+        case .Left: return MONOME_ROTATE_0
+        case .Bottom: return MONOME_ROTATE_90
+        case .Right: return MONOME_ROTATE_180
+        case .Top: return MONOME_ROTATE_270
         }
     }
 }
@@ -155,7 +152,9 @@ public struct TiltEvent: EventProtocol {
     }
 }
 
-public enum MonomeLedStatus: UInt32 {
-    case on = 0
-    case off = 1
+public enum LED {
+    public enum Status: UInt32 {
+        case On = 0
+        case Off = 1
+    }
 }
