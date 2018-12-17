@@ -1,39 +1,36 @@
 import clibmonome
 import Foundation
 
-public enum EventType: CaseIterable {
-    case buttonUp
-    case buttonDown
-    case encoderDelta
-    case encoderKeyUp
-    case encoderKeyDown
-    case tilt
+enum UnderlyingEventType: CaseIterable {
+    case ButtonUp
+    case ButtonDown
+    case EncoderDelta
+    case EncoderKeyUp
+    case EncoderKeyDown
+    case Tilt
 }
 
-extension EventType {
-    init() {
-        self = .buttonUp
-    }
+extension UnderlyingEventType {
     init(_ type: monome_event_type_t) {
         switch type {
-        case MONOME_BUTTON_UP: self = .buttonUp
-        case MONOME_BUTTON_DOWN: self = .buttonDown
-        case MONOME_ENCODER_DELTA: self = .encoderDelta
-        case MONOME_ENCODER_KEY_UP: self = .encoderKeyUp
-        case MONOME_ENCODER_KEY_DOWN: self = .encoderKeyDown
-        case MONOME_TILT: self = .tilt
-        case MONOME_EVENT_MAX: self = .buttonUp
-        default: self = .buttonUp
+        case MONOME_BUTTON_UP: self = .ButtonUp
+        case MONOME_BUTTON_DOWN: self = .ButtonDown
+        case MONOME_ENCODER_DELTA: self = .EncoderDelta
+        case MONOME_ENCODER_KEY_UP: self = .EncoderKeyUp
+        case MONOME_ENCODER_KEY_DOWN: self = .EncoderKeyDown
+        case MONOME_TILT: self = .Tilt
+        case MONOME_EVENT_MAX: self = .ButtonUp
+        default: self = .ButtonUp
         }
     }
     var cType: monome_event_type_t {
         switch self {
-        case .buttonUp: return MONOME_BUTTON_UP
-        case .buttonDown: return MONOME_BUTTON_DOWN
-        case .encoderDelta: return MONOME_ENCODER_DELTA
-        case .encoderKeyUp: return MONOME_ENCODER_KEY_UP
-        case .encoderKeyDown: return MONOME_ENCODER_KEY_DOWN
-        case .tilt: return MONOME_TILT
+        case .ButtonUp: return MONOME_BUTTON_UP
+        case .ButtonDown: return MONOME_BUTTON_DOWN
+        case .EncoderDelta: return MONOME_ENCODER_DELTA
+        case .EncoderKeyUp: return MONOME_ENCODER_KEY_UP
+        case .EncoderKeyDown: return MONOME_ENCODER_KEY_DOWN
+        case .Tilt: return MONOME_TILT
         }
     }
 }
@@ -72,21 +69,9 @@ public protocol EventProtocol {
     var timestamp: DispatchWallTime { get }
 }
 
-struct Event {
-    static func event(for monomeEvent: UnsafePointer<monome_event_t>?) -> EventProtocol? {
-        guard let monomeEvent = monomeEvent else {
-            return nil
-        }
-        switch monomeEvent.pointee.event_type {
-        case MONOME_BUTTON_UP, MONOME_BUTTON_DOWN:
-            return GridEvent(monomeEvent)
-        case MONOME_ENCODER_DELTA, MONOME_ENCODER_KEY_UP, MONOME_ENCODER_KEY_DOWN:
-            return EncoderEvent(monomeEvent)
-        case MONOME_TILT:
-            return TiltEvent(monomeEvent)
-        default:
-            return nil
-        }
+extension Event {
+    var type: UnderlyingEventType {
+        return UnderlyingEventType(cEvent.pointee.event_type)
     }
 }
 
