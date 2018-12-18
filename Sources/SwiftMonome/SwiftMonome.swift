@@ -149,9 +149,9 @@ extension Monome {
         let bytes = data.toBytes()
         monome_led_row(monome, xOffset, y, bytes.count, bytes)
     }
-    public func intensity(_ brightness: LED.Level) {
+    public func intensity(_ level: LED.Level) {
         // TODO: Return type (-1 is an error, I think...)
-        monome_led_intensity(monome, brightness.rawValue)
+        monome_led_intensity(monome, level.rawValue)
     }
     public func levelSet(x: UInt32, y: UInt32, level: LED.Level) {
         // TODO: Return type (-1 is an error, I think...)
@@ -176,19 +176,19 @@ extension Monome {
     }
 
     // MARK: - Monome: LED Ring Commands
-    public func ledRingSet(ring: UInt32, led: UInt32, level: LED.Level) {
+    public func ringSet(ring: UInt32, led: UInt32, level: LED.Level) {
         // TODO: Return type (-1 is an error, I think...)
         monome_led_ring_set(monome, ring, led, level.rawValue)
     }
-    public func ledRingAll(ring: UInt32, level: LED.Level) {
+    public func ringAll(ring: UInt32, level: LED.Level) {
         // TODO: Return type (-1 is an error, I think...)
         monome_led_ring_all(monome, ring, level.rawValue)
     }
-    public func ledRingMap(ring: UInt32, levels: [[LED.Level]]) {
+    public func ringMap(ring: UInt32, levels: [[LED.Level]]) {
         // TODO: Return type (-1 is an error, I think...)
         monome_led_ring_map(monome, ring, levels.toBytes())
     }
-    public func ledRingRange(ring: UInt32, start: UInt32, end: UInt32, level: LED.Level) {
+    public func ringRange(ring: UInt32, start: UInt32, end: UInt32, level: LED.Level) {
         // TODO: Return type (-1 is an error, I think...)
         monome_led_ring_range(monome, ring, start, end, level.rawValue)
     }
@@ -251,8 +251,8 @@ extension Event {
 /// Grid specific event
 public struct GridEvent: Event {
     public enum Action {
-        case ButtonDown
-        case ButtonUp
+        case buttonDown
+        case buttonUp
     }
     public init(_ event: UnsafePointer<monome_event_t>) {
         self.cEvent = event
@@ -275,9 +275,9 @@ public struct GridEvent: Event {
 extension GridEvent.Action {
     init(_ eventType: monome_event_type_t) {
         if eventType == MONOME_BUTTON_UP {
-            self = .ButtonUp
+            self = .buttonUp
         } else {
-            self = .ButtonDown
+            self = .buttonDown
         }
     }
 }
@@ -285,9 +285,9 @@ extension GridEvent.Action {
 /// Arc specific event
 public struct ArcEvent: Event {
     public enum Action {
-        case Delta
-        case KeyUp
-        case KeyDown
+        case delta
+        case keyUp
+        case keyDown
     }
     public init(_ event: UnsafePointer<monome_event_t>) {
         self.cEvent = event
@@ -310,10 +310,10 @@ public struct ArcEvent: Event {
 extension ArcEvent.Action {
     init(_ eventType: monome_event_type_t) {
         switch eventType {
-        case MONOME_ENCODER_DELTA: self = .Delta
-        case MONOME_ENCODER_KEY_UP: self = .KeyUp
-        case MONOME_ENCODER_KEY_DOWN: self = .KeyDown
-        default: self = .Delta
+        case MONOME_ENCODER_DELTA: self = .delta
+        case MONOME_ENCODER_KEY_UP: self = .keyUp
+        case MONOME_ENCODER_KEY_DOWN: self = .keyDown
+        default: self = .delta
         }
     }
 }
@@ -344,88 +344,88 @@ public struct TiltEvent: Event {
 
 // MARK: - Convenience Wrappers
 public enum Rotation {
-    case Left
-    case Bottom
-    case Right
-    case Top
+    case left
+    case bottom
+    case right
+    case top
 }
 
 extension Rotation {
     init(_ rotation: monome_rotate_t) {
         switch rotation {
-        case MONOME_ROTATE_0: self = .Left
-        case MONOME_ROTATE_90: self = .Bottom
-        case MONOME_ROTATE_180: self = .Right
-        case MONOME_ROTATE_270: self = .Top
-        default: self = .Left
+        case MONOME_ROTATE_0: self = .left
+        case MONOME_ROTATE_90: self = .bottom
+        case MONOME_ROTATE_180: self = .right
+        case MONOME_ROTATE_270: self = .top
+        default: self = .left
         }
     }
     var cRotation: monome_rotate_t {
         switch self {
-        case .Left: return MONOME_ROTATE_0
-        case .Bottom: return MONOME_ROTATE_90
-        case .Right: return MONOME_ROTATE_180
-        case .Top: return MONOME_ROTATE_270
+        case .left: return MONOME_ROTATE_0
+        case .bottom: return MONOME_ROTATE_90
+        case .right: return MONOME_ROTATE_180
+        case .top: return MONOME_ROTATE_270
         }
     }
 }
 
 enum UnderlyingEventType: CaseIterable {
-    case ButtonUp
-    case ButtonDown
-    case EncoderDelta
-    case EncoderKeyUp
-    case EncoderKeyDown
-    case Tilt
+    case buttonUp
+    case buttonDown
+    case encoderDelta
+    case encoderKeyUp
+    case encoderKeyDown
+    case tilt
 }
 
 extension UnderlyingEventType {
     init(_ type: monome_event_type_t) {
         switch type {
-        case MONOME_BUTTON_UP: self = .ButtonUp
-        case MONOME_BUTTON_DOWN: self = .ButtonDown
-        case MONOME_ENCODER_DELTA: self = .EncoderDelta
-        case MONOME_ENCODER_KEY_UP: self = .EncoderKeyUp
-        case MONOME_ENCODER_KEY_DOWN: self = .EncoderKeyDown
-        case MONOME_TILT: self = .Tilt
-        case MONOME_EVENT_MAX: self = .ButtonUp
-        default: self = .ButtonUp
+        case MONOME_BUTTON_UP: self = .buttonUp
+        case MONOME_BUTTON_DOWN: self = .buttonDown
+        case MONOME_ENCODER_DELTA: self = .encoderDelta
+        case MONOME_ENCODER_KEY_UP: self = .encoderKeyUp
+        case MONOME_ENCODER_KEY_DOWN: self = .encoderKeyDown
+        case MONOME_TILT: self = .tilt
+        case MONOME_EVENT_MAX: self = .buttonUp
+        default: self = .buttonUp
         }
     }
     var cType: monome_event_type_t {
         switch self {
-        case .ButtonUp: return MONOME_BUTTON_UP
-        case .ButtonDown: return MONOME_BUTTON_DOWN
-        case .EncoderDelta: return MONOME_ENCODER_DELTA
-        case .EncoderKeyUp: return MONOME_ENCODER_KEY_UP
-        case .EncoderKeyDown: return MONOME_ENCODER_KEY_DOWN
-        case .Tilt: return MONOME_TILT
+        case .buttonUp: return MONOME_BUTTON_UP
+        case .buttonDown: return MONOME_BUTTON_DOWN
+        case .encoderDelta: return MONOME_ENCODER_DELTA
+        case .encoderKeyUp: return MONOME_ENCODER_KEY_UP
+        case .encoderKeyDown: return MONOME_ENCODER_KEY_DOWN
+        case .tilt: return MONOME_TILT
         }
     }
 }
 
 public enum LED {
     public enum Status: UInt32 {
-        case Off = 0
-        case On = 1
+        case off = 0
+        case on = 1
     }
     public enum Level: UInt32 {
-        case L00 = 0
-        case L01 = 1
-        case L02 = 2
-        case L03 = 3
-        case L04 = 4
-        case L05 = 5
-        case L06 = 6
-        case L07 = 7
-        case L08 = 8
-        case L09 = 9
-        case L10 = 10
-        case L11 = 11
-        case L12 = 12
-        case L13 = 13
-        case L14 = 14
-        case L15 = 15
+        case l00 = 0
+        case l01 = 1
+        case l02 = 2
+        case l03 = 3
+        case l04 = 4
+        case l05 = 5
+        case l06 = 6
+        case l07 = 7
+        case l08 = 8
+        case l09 = 9
+        case l10 = 10
+        case l11 = 11
+        case l12 = 12
+        case l13 = 13
+        case l14 = 14
+        case l15 = 15
     }
 }
 
