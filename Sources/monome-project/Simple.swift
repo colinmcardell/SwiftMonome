@@ -20,12 +20,15 @@ class Simple: Application {
     var description: String {
         return "\(name) – Press a button to toggle it!"
     }
+
+    let scheduler: MonomeEventScheduler
     weak var delegate: ApplicationDelegate?
     var state: [[LED.Status]] = Array(repeating: Array(repeating: .off, count: 16), count: 16)
 
     init(monome: Monome, io: ConsoleIO) {
         self.monome = monome
         self.io = io
+        self.scheduler = MonomeEventScheduler(monome: self.monome)
     }
 
     func clear() {
@@ -46,7 +49,7 @@ class Simple: Application {
         clear()
         monome.registerGridHandler { [weak self] (monome: Monome, event: GridEvent) in
             if event.action == .buttonUp {
-                // Toggle
+                // Toggle grid button LED status
                 guard let strongSelf = self else {
                     return
                 }
@@ -62,21 +65,14 @@ class Simple: Application {
             }
         }
 
-//        var timer: DispatchSourceTimer?
-        let queue = DispatchQueue.global(qos: .userInteractive)
-        let timer = DispatchSource.makeTimerSource(queue: queue)
-        timer.schedule(deadline: .now(), repeating: .milliseconds(16))
-        timer.setEventHandler { [weak self] in
-            self?.monome.eventHandleNext()
-        }
-        timer.resume()
+        scheduler.start()
+
         var shouldQuit: Bool = false
         while !shouldQuit {
             guard let input = io.getInput() else {
                 continue
             }
             if input == "q" {
-                timer.cancel()
                 shouldQuit = true
             }
         }
@@ -85,6 +81,7 @@ class Simple: Application {
     }
 
     func quit(_ exitStatus: Int32) {
+        scheduler.stop()
         delegate?.applicationDidFinish(self, exitStatus: exitStatus)
     }
 }
