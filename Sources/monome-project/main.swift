@@ -5,47 +5,137 @@ import Darwin
 #endif
 import SwiftMonome
 
-print("Initializing Monome...")
-guard let monome = Monome("/dev/cu.usbserial-m1000286") else {
-    print("Error: Monome Initialization Failed")
-    exit(EXIT_FAILURE)
-}
-print("Monome Initialized")
-print(monome)
-
-monome.all(status: .off)
-
-monome.registerGridHandler { (monome: Monome, event: GridEvent) in
-    switch event.action {
-    case .buttonDown:
-//        monome.levelMap(xOffset: event.x, yOffset: 0, data: [[.l15, .l15, .l15, .l15, .l15, .l15, .l15, .l15],
-//                                                             [.l14, .l14, .l14, .l14, .l14, .l14, .l14, .l14],
-//                                                             [.l13, .l13, .l13, .l13, .l13, .l13, .l13, .l13],
-//                                                             [.l12, .l12, .l12, .l12, .l12, .l12, .l12, .l12],
-//                                                             [.l11, .l11, .l11, .l11, .l11, .l11, .l11, .l11],
-//                                                             [.l10, .l10, .l10, .l10, .l10, .l10, .l10, .l10],
-//                                                             [.l06, .l06, .l06, .l06, .l06, .l06, .l06, .l06],
-//                                                             [.l13, .l13, .l13, .l13, .l13, .l13, .l13, .l13]])
-//        monome.map(xOffset: event.x, yOffset: 0, data: [[.off, .on, .off, .on, .off, .on, .off, .on],
-//                                                        [.on, .on, .off, .on, .off, .on, .off, .on],
-//                                                        [.off, .on, .off, .on, .off, .on, .off, .on],
-//                                                        [.off, .on, .off, .on, .off, .on, .off, .on],
-//                                                        [.off, .on, .off, .on, .off, .on, .off, .on],
-//                                                        [.off, .on, .off, .on, .off, .on, .off, .on],
-//                                                        [.off, .on, .off, .on, .off, .on, .off, .on],
-//                                                        [.off, .on, .off, .on, .off, .on, .off, .on]])
-        var columnData = [LED.Status](repeating: .on, count: Int(monome.rows))
-        columnData[Int(event.y)] = .off
-        monome.column(x: event.x, yOffset: event.y % 8, data: columnData)
-        var rowData = [LED.Status](repeating: .on, count: Int(monome.columns))
-        rowData[Int(event.x)] = .off
-        monome.row(xOffset: event.x % 8, y: event.y, data: rowData)
-    case .buttonUp:
-        monome.all(status: .off)
+class Main {
+    enum OptionType: String {
+        case close = "c"
+        case open = "o"
+        case quit = "q"
+        case simple = "s"
+        case usage = "u"
+        case unknown
+        
+        init(value: String) {
+            switch value {
+            case "c": self = .close
+            case "o": self = .open
+            case "q": self = .quit
+            case "s": self = .simple
+            case "u": self = .usage
+            default: self = .unknown
+            }
+        }
+        
+        var usage: String {
+            switch self {
+            case .close:
+                return "    \(self.rawValue) - Close a connection to a Monome device."
+            case .open:
+                return "    \(self.rawValue) - Open a connection with a Monome device."
+            case .quit:
+                return "    \(self.rawValue) - Quit"
+            case .simple:
+                return "    \(self.rawValue) - Load a simple Monome application run with the connected Monome device"
+            case .usage:
+                return "    \(self.rawValue) - Display example project usage."
+            case .unknown:
+                return "Unknown option type: \(self.rawValue)"
+            }
+        }
     }
-    print(event)
+
+    let io: ConsoleIO = ConsoleIO()
+    var monome: Monome?
+
+    var currentOption: OptionType = .unknown
+    var currentApplication: Application?
+    
+    func displayUsage() {
+        io.writeMessage("Usage:")
+        io.writeMessage(OptionType.open.usage)
+        io.writeMessage(OptionType.close.usage)
+        io.writeMessage(OptionType.simple.usage)
+        io.writeMessage(OptionType.usage.usage)
+        io.writeMessage(OptionType.quit.usage)
+    }
+    
+    func displayCarrot(_ option: OptionType) {
+        if option == .unknown {
+            io.displayCarrot()
+        } else {
+            io.displayCarrot("\(currentOption)")
+        }
+    }
+    
+    func run() {
+        io.writeMessage("Welcome to the SwiftMonome example project.")
+        displayUsage()
+        var shouldQuit = false
+        while !shouldQuit {
+            currentOption = .unknown
+            displayCarrot(currentOption)
+            guard let input = io.getInput() else {
+                continue
+            }
+            currentOption = OptionType(value: input)
+            switch currentOption {
+            case .open:
+                io.writeMessage("Please provide monome device path, or press [Enter] for default (\(Monome.DefaultDevice))")
+                displayCarrot(currentOption)
+                guard let path = io.getInput() else {
+                    continue
+                }
+                if path.count == 0 {
+                    monome = Monome()
+                } else {
+                    monome = Monome(path)
+                }
+                guard let monome = monome else {
+                    io.writeMessage("Connection to Monome device at provided path failed.", to: .error)
+                    continue
+                }
+                monome.all(status: .off)
+                io.writeMessage(monome)
+            case .close:
+                guard let monome = monome, let path = monome.devicePath else {
+                    io.writeMessage("No connection Monome device currently open.", to: .error)
+                    continue
+                }
+                self.monome = nil
+                io.writeMessage("Connection to Monome device (\(path)) CLOSED.")
+            case .quit:
+                shouldQuit = true
+            case .simple:
+                guard let monome = monome else {
+                    io.writeMessage("Monome device connection unavailable, try opening a connect [o]", to: .error)
+                    continue
+                }
+                currentApplication = Simple(monome: monome, io: io)
+                currentApplication?.run()
+                continue
+            case .usage:
+                displayUsage()
+                continue
+            case .unknown: continue
+            }
+        }
+        
+        io.writeMessage("Thanks, that was fun.")
+        exit(EXIT_SUCCESS)
+    }
 }
 
-while(true) {
-    monome.eventHandleNext()
+extension Main: ApplicationDelegate {
+    func applicationDidFinish(_ application: Application, exitStatus: Int32) {
+        if exitStatus == EXIT_SUCCESS {
+            io.writeMessage("\(application.name) did finish.")
+        } else {
+            io.writeMessage("\(application.name) did finish with status: \(exitStatus)", to: .error)
+        }
+        currentApplication = nil
+        monome?.clearHandlers()
+    }
 }
+
+var main: Main = Main()
+
+main.run()
