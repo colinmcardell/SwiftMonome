@@ -12,13 +12,19 @@ import Foundation
 import SwiftMonome
 
 class Simple: Application {
+    static func name() -> String {
+        return "simple"
+    }
+    static func description() -> String {
+        return "\(Simple.name()) – Press a button to toggle it!"
+    }
     var monome: Monome
     var io: ConsoleIO
     var name: String {
-        return "Simple"
+        return Simple.name()
     }
     var description: String {
-        return "\(name) – Press a button to toggle it!"
+        return Simple.description()
     }
 
     let scheduler: MonomeEventScheduler
@@ -44,9 +50,14 @@ class Simple: Application {
         monome.all(status: .off)
     }
 
+    func displayUsage() {
+        io.writeMessage("Usage:")
+        io.writeMessage("   u - Display `\(name)` usage.")
+        io.writeMessage("   q - Quit")
+    }
+
     func run() {
-        io.writeMessage(self)
-        clear()
+        // Monome setup & application state
         monome.registerGridHandler { [weak self] (monome: Monome, event: GridEvent) in
             if event.action == .buttonUp {
                 // Toggle grid button LED status
@@ -64,18 +75,29 @@ class Simple: Application {
                 strongSelf.state[row][col] = nextStatus
             }
         }
+        clear()
 
-        scheduler.start()
+        // Application description & usage
+        io.writeMessage(self)
+        displayUsage()
 
+        scheduler.start() // Start Monome Event Scheduler
+
+        // Listen for user input
         var shouldQuit: Bool = false
         while !shouldQuit {
+            io.displayCarrot("simple")
             guard let input = io.getInput() else {
                 continue
             }
             if input == "q" {
                 shouldQuit = true
+            } else {
+                displayUsage()
             }
         }
+
+        // All done
         monome.all(status: .off)
         quit(EXIT_SUCCESS)
     }

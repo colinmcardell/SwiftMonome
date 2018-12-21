@@ -8,6 +8,7 @@ import SwiftMonome
 class Main {
     enum OptionType: String {
         case close = "c"
+        case help = "help"
         case open = "o"
         case quit = "q"
         case simple = "s"
@@ -17,6 +18,7 @@ class Main {
         init(value: String) {
             switch value {
             case "c": self = .close
+            case "help": self = .help
             case "o": self = .open
             case "q": self = .quit
             case "s": self = .simple
@@ -29,14 +31,16 @@ class Main {
             switch self {
             case .close:
                 return "    \(self.rawValue) - Close a connection to a Monome device."
+            case .help:
+                return "    \(self.rawValue) - Display `monome-project` usage."
             case .open:
                 return "    \(self.rawValue) - Open a connection with a Monome device."
             case .quit:
                 return "    \(self.rawValue) - Quit"
             case .simple:
-                return "    \(self.rawValue) - Load a simple Monome application run with the connected Monome device"
+                return "    \(self.rawValue) - Load: \(Simple.description())"
             case .usage:
-                return "    \(self.rawValue) - Display example project usage."
+                return "    \(self.rawValue) - Display `monome-project` usage."
             case .unknown:
                 return "Unknown option type: \(self.rawValue)"
             }
@@ -111,11 +115,11 @@ class Main {
                 }
                 currentApplication = Simple(monome: monome, io: io)
                 currentApplication?.run()
-                continue
-            case .usage:
                 displayUsage()
                 continue
-            case .unknown: continue
+            case .usage, .help, .unknown:
+                displayUsage()
+                continue
             }
         }
         
