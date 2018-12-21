@@ -7,6 +7,7 @@ public typealias MonomeArcCallback = ((Monome, ArcEvent) -> Void)
 public typealias MonomeTiltCallback = ((Monome, TiltEvent) -> Void)
 
 public final class Monome {
+    public static let DefaultDevice = "osc.udp://127.0.0.1:8080/monome"
     public let monome: OpaquePointer!
     var eventHandler: MonomeEventCallback?
     var gridCallback: MonomeGridCallback?
@@ -14,7 +15,7 @@ public final class Monome {
     var tiltCallback: MonomeTiltCallback?
 
     // Lifecycle
-    public init?(_ device: String = "osc.udp://127.0.0.1:8080/monome") {
+    public init?(_ device: String = DefaultDevice) {
         guard let monome = monome_connect(device, "8000") else {
             return nil
         }
