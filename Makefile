@@ -10,4 +10,7 @@ build:
 clean:
 	rm -rf .build
 
-.PHONY: run build clean
+project:
+	swift package generate-xcodeproj
+
+.PHONY: run build clean project
