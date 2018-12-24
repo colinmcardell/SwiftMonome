@@ -1,12 +1,29 @@
+#if os(Linux)
+import Glibc
+#else
+import Darwin
+#endif
 import SwiftMonome
 
-protocol Application: CustomStringConvertible {
-    var monome: Monome { get }
-    var io: ConsoleIO { get }
-    var name: String { get }
+class Application: CustomStringConvertible {
+    let monome: Monome
+    let io: ConsoleIO
+    var name: String = ""
+    var description: String = ""
 
-    func run()
-    func quit(_ exitStatus: Int32)
+    weak var delegate: ApplicationDelegate?
+
+    init(monome: Monome, io: ConsoleIO) {
+        self.monome = monome
+        self.io = io
+    }
+
+    func run() {
+        quit(EXIT_SUCCESS)
+    }
+    func quit(_ exitStatus: Int32) {
+        delegate?.applicationDidFinish(self, exitStatus: exitStatus)
+    }
 }
 
 protocol ApplicationDelegate: AnyObject {

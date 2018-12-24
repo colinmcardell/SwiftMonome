@@ -12,6 +12,7 @@ class Main {
         case open = "o"
         case quit = "q"
         case simple = "s"
+        case test = "t"
         case usage = "u"
         case unknown
         
@@ -22,6 +23,7 @@ class Main {
             case "o": self = .open
             case "q": self = .quit
             case "s": self = .simple
+            case "t": self = .test
             case "u": self = .usage
             default: self = .unknown
             }
@@ -39,6 +41,8 @@ class Main {
                 return "    \(self.rawValue) - Quit"
             case .simple:
                 return "    \(self.rawValue) - Load: \(Simple.description())"
+            case .test:
+                return "    \(self.rawValue) - Load: \(Test.description())"
             case .usage:
                 return "    \(self.rawValue) - Display `monome-project` usage."
             case .unknown:
@@ -58,6 +62,7 @@ class Main {
         io.writeMessage(OptionType.open.usage)
         io.writeMessage(OptionType.close.usage)
         io.writeMessage(OptionType.simple.usage)
+        io.writeMessage(OptionType.test.usage)
         io.writeMessage(OptionType.usage.usage)
         io.writeMessage(OptionType.quit.usage)
     }
@@ -68,6 +73,16 @@ class Main {
         } else {
             io.displayCarrot("\(currentOption)")
         }
+    }
+
+    func close() {
+        io.writeMessage("Closing connection to Monome device if necessary...")
+        guard let monome = monome, let path = monome.devicePath else {
+            io.writeMessage("No connection to Monome device.")
+            return
+        }
+        self.monome = nil
+        io.writeMessage("Connection to Monome device (\(path)) CLOSED.")
     }
     
     func run() {
@@ -97,16 +112,13 @@ class Main {
                     io.writeMessage("Connection to Monome device at provided path failed.", to: .error)
                     continue
                 }
-                monome.all(status: .off)
+                monome.all(.off)
                 io.writeMessage(monome)
             case .close:
-                guard let monome = monome, let path = monome.devicePath else {
-                    io.writeMessage("No connection Monome device currently open.", to: .error)
-                    continue
-                }
-                self.monome = nil
-                io.writeMessage("Connection to Monome device (\(path)) CLOSED.")
+                close()
+                continue
             case .quit:
+                close()
                 shouldQuit = true
             case .simple:
                 guard let monome = monome else {
@@ -114,8 +126,17 @@ class Main {
                     continue
                 }
                 currentApplication = Simple(monome: monome, io: io)
+                currentApplication?.delegate = self
                 currentApplication?.run()
-                displayUsage()
+                continue
+            case .test:
+                guard let monome = monome else {
+                    io.writeMessage("Monome device connection unavailable, try opening a connect [o]", to: .error)
+                    continue
+                }
+                currentApplication = Test(monome: monome, io: io)
+                currentApplication?.delegate = self
+                currentApplication?.run()
                 continue
             case .usage, .help, .unknown:
                 displayUsage()
@@ -137,6 +158,9 @@ extension Main: ApplicationDelegate {
         }
         currentApplication = nil
         monome?.clearHandlers()
+        monome?.all(.off)
+        monome?.intensity(.l15)
+        displayUsage()
     }
 }
 

@@ -11,30 +11,23 @@ import Darwin
 import Foundation
 import SwiftMonome
 
-class Simple: Application {
+final class Simple: Application {
     static func name() -> String {
         return "simple"
     }
     static func description() -> String {
         return "\(Simple.name()) – Press a button to toggle it!"
     }
-    var monome: Monome
-    var io: ConsoleIO
-    var name: String {
-        return Simple.name()
-    }
-    var description: String {
-        return Simple.description()
-    }
 
     let scheduler: MonomeEventScheduler
-    weak var delegate: ApplicationDelegate?
     var state: [[LED.Status]] = Array(repeating: Array(repeating: .off, count: 16), count: 16)
 
-    init(monome: Monome, io: ConsoleIO) {
-        self.monome = monome
-        self.io = io
-        self.scheduler = MonomeEventScheduler(monome: self.monome)
+    override init(monome: Monome, io: ConsoleIO) {
+        self.scheduler = MonomeEventScheduler(monome: monome)
+        super.init(monome: monome, io: io)
+
+        self.name = Simple.name()
+        self.description = Simple.description()
     }
 
     func clear() {
@@ -47,7 +40,7 @@ class Simple: Application {
             rows = 16
         }
         state = Array(repeating: Array(repeating: .off, count: columns), count: rows)
-        monome.all(status: .off)
+        monome.all(.off)
     }
 
     func displayUsage() {
@@ -56,8 +49,9 @@ class Simple: Application {
         io.writeMessage("   q - Quit")
     }
 
-    func run() {
+    override func run() {
         // Monome setup & application state
+        clear()
         monome.registerGridHandler { [weak self] (monome: Monome, event: GridEvent) in
             if event.action == .buttonUp {
                 // Toggle grid button LED status
@@ -75,18 +69,17 @@ class Simple: Application {
                 strongSelf.state[row][col] = nextStatus
             }
         }
-        clear()
 
         // Application description & usage
         io.writeMessage(self)
         displayUsage()
+        io.displayCarrot("simple")
 
         scheduler.start() // Start Monome Event Scheduler
 
         // Listen for user input
         var shouldQuit: Bool = false
         while !shouldQuit {
-            io.displayCarrot("simple")
             guard let input = io.getInput() else {
                 continue
             }
@@ -94,15 +87,16 @@ class Simple: Application {
                 shouldQuit = true
             } else {
                 displayUsage()
+                io.displayCarrot("simple")
             }
         }
 
         // All done
-        monome.all(status: .off)
+        monome.all(.off)
         quit(EXIT_SUCCESS)
     }
 
-    func quit(_ exitStatus: Int32) {
+    override func quit(_ exitStatus: Int32) {
         scheduler.stop()
         delegate?.applicationDidFinish(self, exitStatus: exitStatus)
     }
