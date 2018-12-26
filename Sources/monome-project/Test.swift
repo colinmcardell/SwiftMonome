@@ -27,7 +27,8 @@ final class Test: Application {
 
     override func run() {
         monome.all(.off)
-        monome.intensity(.l15)
+        monome.intensity(15)
+
         // Application description & usage
         io.writeMessage(self)
         io.writeMessage("Running \(name)...")
@@ -41,7 +42,7 @@ final class Test: Application {
             testLedCol16(.on)
         }
 
-        testLedRow16(.off)
+        testLedCol16(.off)
         testLedOnOff()
         testLedMap()
 
@@ -50,7 +51,7 @@ final class Test: Application {
         fadeOut()
 
         monome.all(.off)
-        monome.intensity(.l00)
+        monome.intensity(15)
         quit(EXIT_SUCCESS)
     }
 
@@ -116,7 +117,7 @@ extension Test {
     func testLedCol16(_ status: LED.Status) {
         var on: UInt8 = status == .on ? 1 : 0
         for i in 0..<16 {
-            monome.column(x: UInt32(i), yOffset: UInt32(i), count: 2, data: &on)
+            monome.column(x: UInt32(i), yOffset: 0, count: 2, data: &on)
             chill(16)
             on |= on << 1
         }
