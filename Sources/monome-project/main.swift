@@ -13,6 +13,7 @@ class Main {
         case quit = "q"
         case simple = "s"
         case test = "t"
+        case torture = "to"
         case usage = "u"
         case unknown
         
@@ -24,6 +25,7 @@ class Main {
             case "q": self = .quit
             case "s": self = .simple
             case "t": self = .test
+            case "to": self = .torture
             case "u": self = .usage
             default: self = .unknown
             }
@@ -43,6 +45,8 @@ class Main {
                 return "    \(self.rawValue) - Load: \(Simple.description())"
             case .test:
                 return "    \(self.rawValue) - Load: \(Test.description())"
+            case .torture:
+                return "    \(self.rawValue) - Load: \(Torture.description())"
             case .usage:
                 return "    \(self.rawValue) - Display `monome-project` usage."
             case .unknown:
@@ -63,6 +67,7 @@ class Main {
         io.writeMessage(OptionType.close.usage)
         io.writeMessage(OptionType.simple.usage)
         io.writeMessage(OptionType.test.usage)
+        io.writeMessage(OptionType.torture.usage)
         io.writeMessage(OptionType.usage.usage)
         io.writeMessage(OptionType.quit.usage)
     }
@@ -135,6 +140,24 @@ class Main {
                     continue
                 }
                 currentApplication = Test(monome: monome, io: io)
+                currentApplication?.delegate = self
+                currentApplication?.run()
+                continue
+            case .torture:
+                guard let monome = monome else {
+                    io.writeMessage("Monome device connection unavailable, try opening a connect [o]", to: .error)
+                    continue
+                }
+                io.writeMessage("\(Torture.name()) will likely overwhelm libmonome, as well as this process.\nThis will require you to:\n1) Interrupt or kill this process.\n2) Disconnect and reconnect your Monome device.")
+                io.writeMessage("Do you wish to continue?\nPress [y] for yes, or any other key for no.")
+                displayCarrot(.unknown)
+                guard let nextInput = io.getInput() else {
+                    continue
+                }
+                if nextInput != "y" {
+                    continue
+                }
+                currentApplication = Torture(monome: monome, io: io)
                 currentApplication?.delegate = self
                 currentApplication?.run()
                 continue
