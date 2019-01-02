@@ -25,6 +25,7 @@ class MonomeEventScheduler {
         }
     }
     deinit {
+        // TODO: This crashes
         timer.cancel()
     }
 

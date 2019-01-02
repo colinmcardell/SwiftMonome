@@ -8,8 +8,8 @@ import SwiftMonome
 class Application: CustomStringConvertible {
     let monome: Monome
     let io: ConsoleIO
-    var name: String = ""
-    var description: String = ""
+    var name: String = "" // TODO: This doesn't need to exists if I have static funcs that do the same thing
+    var description: String = "" // TODO: This doesn't need to exists if I have static funcs that do the same thing
 
     weak var delegate: ApplicationDelegate?
 
