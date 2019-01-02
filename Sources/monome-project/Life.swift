@@ -16,35 +16,47 @@ struct Point {
     var y: Int
 }
 
-struct Cell {
+class Cell {
     var isAlive: Bool
     var modNext: Bool
     var coordinate: Point
     var nnum: UInt8
 
-    func neighbors(_ world: [[Cell]]) -> [Point] {
+    // Lifecycle
+    init() {
+        self.isAlive = false
+        self.modNext = false
+        self.coordinate = Point(x: 0, y: 0)
+        self.nnum = 0
+    }
+    convenience init(coordinate: Point) {
+        self.init()
+        self.coordinate = coordinate
+    }
+    func neighbors(_ world: [[Cell]]) -> [Cell] {
         let columns: Int = world.count
         let rows: Int = world[0].count
-        var neighbors: [Point] = Array()
-        neighbors[0] = world[(Int(coordinate.x) - 1) % columns][(Int(coordinate.y) - 1) % rows].coordinate
-        neighbors[1] = world[(Int(coordinate.x) - 1) % columns][(Int(coordinate.y) + 1) % rows].coordinate
-        neighbors[2] = world[(Int(coordinate.x) - 1) % columns][(Int(coordinate.y)) % rows].coordinate
+        var neighbors: [Cell] = Array()
+        neighbors[0] = world[(Int(coordinate.x) - 1) % columns][(Int(coordinate.y) - 1) % rows]
+        neighbors[1] = world[(Int(coordinate.x) - 1) % columns][(Int(coordinate.y) + 1) % rows]
+        neighbors[2] = world[(Int(coordinate.x) - 1) % columns][(Int(coordinate.y)) % rows]
 
-        neighbors[3] = world[(Int(coordinate.x) + 1) % columns][(Int(coordinate.y) - 1) % rows].coordinate
-        neighbors[4] = world[(Int(coordinate.x) + 1) % columns][(Int(coordinate.y) + 1) % rows].coordinate
-        neighbors[5] = world[(Int(coordinate.x) + 1) % columns][(Int(coordinate.y)) % rows].coordinate
+        neighbors[3] = world[(Int(coordinate.x) + 1) % columns][(Int(coordinate.y) - 1) % rows]
+        neighbors[4] = world[(Int(coordinate.x) + 1) % columns][(Int(coordinate.y) + 1) % rows]
+        neighbors[5] = world[(Int(coordinate.x) + 1) % columns][(Int(coordinate.y)) % rows]
 
-        neighbors[6] = world[(Int(coordinate.x)) % columns][(Int(coordinate.y) - 1) % rows].coordinate
-        neighbors[7] = world[(Int(coordinate.x)) % columns][(Int(coordinate.y) + 1) % rows].coordinate
+        neighbors[6] = world[(Int(coordinate.x)) % columns][(Int(coordinate.y) - 1) % rows]
+        neighbors[7] = world[(Int(coordinate.x)) % columns][(Int(coordinate.y) + 1) % rows]
         return neighbors
     }
 
-//    init() {
-//        self.isAlive = false
-//        self.modNext = 0
-//        self.coordinate = Point(x: 0, y: 0)
-//        self.nnum = 0
-//    }
+    func modNeighbors(_ world: [[Cell]], delta: Int) {
+        let neighbors = self.neighbors(world)
+        for cell in neighbors {
+            // TODO: What is happening here? Casting an Int to a UInt8 is going to do what to our number value.
+            cell.nnum += UInt8(delta)
+        }
+    }
 }
 
 final class Life: Application {
@@ -135,7 +147,8 @@ extension Life {
         for x in 0..<columns {
             var column: [Cell] = Array()
             for y in 0..<rows {
-                let cell = Cell(isAlive: false, modNext: false, coordinate: Point(x: x, y: y), nnum: 0)
+                let cell = Cell()
+                cell.coordinate = Point(x: x, y: y)
                 column.append(cell)
             }
             state.append(column)
@@ -143,76 +156,48 @@ extension Life {
         return state
     }
 
-    static func nextState(_ state: [[Cell]]) -> [[Cell]] {
+    static func updateState(_ state: [[Cell]]) {
         let columns: Int = state.count
         let rows: Int = state[0].count
-        var nextState: [[Cell]] = Array()
+
         for x in 0..<columns {
             for y in 0..<rows {
                 let cell = state[x][y]
 
-                var isAlive: Bool = cell.isAlive
-                var modNext: Bool = cell.modNext
-                var coordinate: Point = cell.coordinate
-                var nnum: UInt8 = cell.nnum
-
                 if cell.modNext {
+                    var delta: Int = 0
                     if cell.isAlive {
-                        isAlive = false
-
+                        cell.isAlive = false
+                        delta = 1
                     } else {
-
+                        cell.isAlive = true
+                        delta = -1
                     }
+                    cell.modNeighbors(state, delta: delta)
+                    cell.modNext = false
                 }
-
-                let nextCell = Cell(isAlive: isAlive, modNext: modNext, coordinate: coordinate, nnum: nnum)
-
             }
         }
 
-//        for (x = 0; x < COLUMNS; x++) {
-//            for (y = 0; y < ROWS; y++) {
-//                c = &world[x][y];
-//
-//                if (c->mod_next) {
-//                    if (c->alive) {
-//                        c->alive = 0;
-//                        mod_neighbors(c, -1);
-//
-//                        monome_led_off(monome, x, y);
-//                    } else {
-//                        c->alive = 1;
-//                        mod_neighbors(c, 1);
-//
-//                        monome_led_on(monome, x, y);
-//                    }
-//
-//                    c->mod_next = 0;
-//                }
-//            }
-//        }
-//
-//        for (x = 0; x < COLUMNS; x++) {
-//            for (y = 0; y < ROWS; y++) {
-//                c = &world[x][y];
-//
-//                switch (c->nnum) {
-//                case 3:
-//                    if (!c->alive)
-//                    c->mod_next = 1;
-//
-//                case 2:
-//                    break;
-//
-//                default:
-//                    if (c->alive)
-//                    c->mod_next = 1;
-//
-//                    break;
-//                }
-//            }
-//        }
-        return nextState
+        for x in 0..<columns {
+            for y in 0..<rows {
+                let cell = state[x][y]
+
+                switch cell.nnum {
+                case 3:
+                    if !cell.isAlive {
+                        cell.modNext = true
+                    }
+                    break
+                case 2:
+                    break
+                default:
+                    if cell.isAlive {
+                        cell.modNext = true
+                    }
+                }
+            }
+        }
     }
 
     func chill(_ msec: Int) {
