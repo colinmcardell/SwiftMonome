@@ -73,7 +73,7 @@ final class Simple: Application {
         // Application description & usage
         io.writeMessage(self)
         displayUsage()
-        io.displayCarrot("simple")
+        io.displayCarrot(name)
 
         scheduler.start() // Start Monome Event Scheduler
 
@@ -87,7 +87,7 @@ final class Simple: Application {
                 shouldQuit = true
             } else {
                 displayUsage()
-                io.displayCarrot("simple")
+                io.displayCarrot(name)
             }
         }
 
