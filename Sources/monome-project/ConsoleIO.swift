@@ -9,12 +9,15 @@ class ConsoleIO {
         case standard
         case error
     }
-    func displayCarrot(_ prompt: String = "") {
-        var message = "> "
-        if prompt.count != 0 {
-            message = "\(prompt) \(message)"
+    func displayCarrot(_ message: String = "") {
+        let name = "monome-examples"
+        var carrot = "> "
+        if message.count != 0 {
+            carrot = "\(name) [\(message)] \(carrot)"
+        } else {
+            carrot = "\(name) \(carrot)"
         }
-        writeMessage(message, to: .standard, newLineTerminator: false)
+        writeMessage(carrot, to: .standard, newLineTerminator: false)
     }
     func writeMessage(_ message: Any, to: OutputType = .standard, newLineTerminator: Bool = true) {
         switch to {
