@@ -1,6 +1,7 @@
 import clibmonome
 
 // MARK: - Monome
+// TODO: Implement optional Monome Event Delegation pattern, along with these event callbacks
 public typealias MonomeEventCallback = ((Monome, Event) -> Void)
 public typealias MonomeGridCallback = ((Monome, GridEvent) -> Void)
 public typealias MonomeArcCallback = ((Monome, ArcEvent) -> Void)
@@ -22,7 +23,7 @@ public final class Monome {
         self.monome = monome
 
         // Register internal handler for each of the event types
-        let pMonome = UnsafeMutableRawPointer(Unmanaged.passUnretained(self).toOpaque())
+        let pMonome = Unmanaged.passUnretained(self).toOpaque()
         UnderlyingEventType.allCases.forEach { type in
             monome_register_handler(self.monome, type.cType, _underlyingEventHandler, pMonome)
         }

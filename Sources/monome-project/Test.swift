@@ -151,12 +151,14 @@ extension Test {
     }
     func testLedRingSet() {
         let yeah = UnsafeMutablePointer<UInt8>.allocate(capacity: 64)
+        defer {
+            yeah.deallocate()
+        }
         for i in 0..<1024 {
             memset(yeah, 0, 64)
             yeah[i & 63] = 15
             monome.ringMap(ring: 0, levels: yeah)
             chill(32)
         }
-        yeah.deallocate()
     }
 }
