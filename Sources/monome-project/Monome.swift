@@ -43,21 +43,14 @@ class EventScheduler {
     }
 
     deinit {
-        guard let timer = timer else {
-            return
-        }
-        if !timer.isCancelled {
-            timer.cancel()
-        }
+        stop()
     }
 
     func start() {
         stop()
         timer = DispatchSource.makeTimerSource(queue: queue)
         timer?.setEventHandler { [weak self] in
-            guard let strongSelf = self, let eventHandler = strongSelf.eventHandler else {
-                return
-            }
+            guard let strongSelf = self, let eventHandler = strongSelf.eventHandler else { return }
             eventHandler()
         }
         timer?.schedule(deadline: .now(), repeating: interval)
@@ -65,7 +58,10 @@ class EventScheduler {
     }
 
     func stop() {
-        timer?.suspend()
+        guard let timer = timer else { return }
+        timer.setEventHandler {}
+        timer.cancel()
+        self.timer = nil
     }
 }
 
