@@ -53,8 +53,7 @@ class Cell {
     func modNeighbors(_ world: [[Cell]], delta: Int) {
         let neighbors = self.neighbors(world)
         for cell in neighbors {
-            // TODO: What is happening here? Casting an Int to a UInt8 is going to do what to our number value.
-            cell.nnum += UInt8(delta)
+            cell.nnum += UInt8(delta) // TODO: What is happening here? Casting an Int to a UInt8 is going to do what to our number value?
         }
     }
 }
@@ -92,6 +91,8 @@ final class Life: Application {
     override func run() {
         // Monome setup & application state
         monome.registerGridHandler { [weak self] (monome: Monome, event: GridEvent) in
+            _ = self // REMOVE: Just silencing weak self unused warning.
+            // TODO: Do something with the grid event
             if event.action == .buttonUp {
                 // Toggle grid button LED status
 //                guard let strongSelf = self else {
@@ -117,6 +118,7 @@ final class Life: Application {
         scheduler.start() // Start Monome Event Scheduler
 
         // Listen for user input
+        // TODO: Move this to an event schduler
         var shouldQuit: Bool = false
         while !shouldQuit {
             guard let input = io.getInput() else {
@@ -133,11 +135,6 @@ final class Life: Application {
         // All done
         monome.all(.off)
         quit(EXIT_SUCCESS)
-    }
-
-    override func quit(_ exitStatus: Int32) {
-        scheduler.stop()
-        delegate?.applicationDidFinish(self, exitStatus: exitStatus)
     }
 }
 
@@ -205,14 +202,6 @@ extension Life {
         var req = timespec(tv_sec: msec * 1000000, tv_nsec: (msec * 1000000) / 1000000000)
         req.tv_nsec = req.tv_nsec - req.tv_sec * 1000000000
         nanosleep(&req, &rem)
-    }
-
-    func modNeighbors(_ coordinates: [Point], delta: UInt8) {
-        coordinates.forEach { point in
-            var cell = state[point.x][point.y]
-            cell.nnum = cell.nnum + delta
-            state[point.x][point.y] = cell
-        }
     }
 
     func tick() {
