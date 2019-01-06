@@ -1,18 +1,51 @@
 import clibmonome
 
-// MARK: - Monome
-// TODO: Implement optional Monome Event Delegation pattern, along with these event callbacks
+// MARK: - Event Callbacks
 public typealias MonomeEventCallback = ((Monome, Event) -> Void)
+
 public typealias MonomeGridCallback = ((Monome, GridEvent) -> Void)
+
 public typealias MonomeArcCallback = ((Monome, ArcEvent) -> Void)
+
 public typealias MonomeTiltCallback = ((Monome, TiltEvent) -> Void)
 
+// MARK: - Event Delegate
+public protocol MonomeEventDelegate: AnyObject {
+    func handleEvent(monome: Monome, event: Event)
+}
+
+public protocol MonomeGridEventDelegate: AnyObject {
+    func handleGridEvent(monome: Monome, event: GridEvent)
+}
+
+public protocol MonomeArcEventDelegate: AnyObject {
+    func handleArcEvent(monome: Monome, event: ArcEvent)
+}
+
+public protocol MonomeTiltEventDelegate: AnyObject {
+    func handleTiltEvent(monome: Monome, event: TiltEvent)
+}
+
 public final class Monome {
+
     public static let DefaultDevice = "osc.udp://127.0.0.1:8080/monome"
+
     public let monome: OpaquePointer!
+
+    public var eventDelegate: MonomeEventDelegate?
+
+    public var gridEventDelegate: MonomeGridEventDelegate?
+
+    public var arcEventDelegate: MonomeArcEventDelegate?
+
+    public var tiltEventDelegate: MonomeTiltEventDelegate?
+
     var eventHandler: MonomeEventCallback?
+
     var gridCallback: MonomeGridCallback?
+
     var arcCallback: MonomeArcCallback?
+
     var tiltCallback: MonomeTiltCallback?
 
     // Lifecycle
