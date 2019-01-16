@@ -13,8 +13,8 @@ import SwiftMonome
 
 struct Point {
 
-    var x: UInt32
-    var y: UInt32
+    var x: Int
+    var y: Int
 }
 
 class Cell {
@@ -43,36 +43,57 @@ class Cell {
         return remainder >= 0 ? remainder : remainder + divisor
     }
 
-    func neighbors(_ world: [[Cell]]) -> [Cell] {
-        let columns: Int = world.count
-        let rows: Int = world[0].count
+    func getNeighbors(_ cells: [[Cell]]) -> [Cell] {
+        let columns: Int = cells.count
+        let rows: Int = cells[0].count
         var neighbors: [Cell] = Array()
-        var xOffset: Int = -1
-        var yOffset: Int = -1
-        neighbors.append(world[_mod(Int(coordinate.x) + xOffset, columns)][_mod(Int(coordinate.y) + yOffset, rows)]) // 0
-        yOffset = 1
-        neighbors.append(world[_mod(Int(coordinate.x) + xOffset, columns)][_mod(Int(coordinate.y) + yOffset, rows)]) // 1
-        yOffset = 0
-        neighbors.append(world[_mod(Int(coordinate.x) + xOffset, columns)][_mod(Int(coordinate.y) + yOffset, rows)]) // 2
 
-        xOffset = 1
-        yOffset = -1
-        neighbors.append(world[_mod(Int(coordinate.x) + xOffset, columns)][_mod(Int(coordinate.y) + yOffset, rows)]) // 3
-        yOffset = 1
-        neighbors.append(world[_mod(Int(coordinate.x) + xOffset, columns)][_mod(Int(coordinate.y) + yOffset, rows)]) // 4
-        yOffset = 0
-        neighbors.append(world[_mod(Int(coordinate.x) + xOffset, columns)][_mod(Int(coordinate.y) + yOffset, rows)]) // 5
-
-        xOffset = 0
-        yOffset = -1
-        neighbors.append(world[_mod(Int(coordinate.x) + xOffset, columns)][_mod(Int(coordinate.y) + yOffset, rows)]) // 6
-        yOffset = 1
-        neighbors.append(world[_mod(Int(coordinate.x) + xOffset, columns)][_mod(Int(coordinate.y) + yOffset, rows)]) // 7
+        for n in 0..<8 {
+            var xOffset: Int = 0
+            var yOffset: Int = 0
+            switch n {
+            case 0:
+                xOffset = -1
+                yOffset = -1
+                break
+            case 1:
+                xOffset = -1
+                yOffset = 1
+                break
+            case 2:
+                xOffset = -1
+                yOffset = 0
+                break
+            case 3:
+                xOffset = 1
+                yOffset = -1
+                break
+            case 4:
+                xOffset = 1
+                yOffset = 1
+                break
+            case 5:
+                xOffset = 1
+                yOffset = 0
+                break
+            case 6:
+                xOffset = 0
+                yOffset = -1
+                break
+            case 7:
+                xOffset = 0
+                yOffset = 1
+                break
+            default:
+                break
+            }
+            neighbors.append(cells[_mod(coordinate.x + xOffset, columns)][_mod(coordinate.y + yOffset, rows)])
+        }
         return neighbors
     }
 
-    func modNeighbors(_ world: [[Cell]], delta: Int) {
-        let neighbors = self.neighbors(world)
+    func modNeighbors(_ cells: [[Cell]], delta: Int) {
+        let neighbors = self.getNeighbors(cells)
         for cell in neighbors {
             if delta < 0 {
                 cell.nnum = cell.nnum &- UInt8(abs(delta))
@@ -172,16 +193,16 @@ final class Life: Application {
 extension Life {
 
     static func defaultState(columns: Int, rows: Int) -> [[Cell]] {
-        var state: [[Cell]] = Array()
+        var cells: [[Cell]] = Array()
         for x in 0..<columns {
             var column: [Cell] = Array()
             for y in 0..<rows {
-                let cell = Cell(coordinate: Point(x: UInt32(x), y: UInt32(y)))
+                let cell = Cell(coordinate: Point(x: x, y: y))
                 column.append(cell)
             }
-            state.append(column)
+            cells.append(column)
         }
-        return state
+        return cells
     }
 
     func tick() {
