@@ -69,18 +69,25 @@ final class Life: Application {
         return "\(Life.name()) – Conway's Game of Life"
     }
 
-    let scheduler: MonomeEventScheduler
+    let monomeEventScheduler: MonomeEventScheduler
+    let applicationEventScheduler: EventScheduler = EventScheduler(.highPriority)
     let columns: Int
     let rows: Int
     var state: [[Cell]]
 
     override init(monome: Monome, io: ConsoleIO) {
-        self.scheduler = MonomeEventScheduler(monome: monome)
+        self.monomeEventScheduler = MonomeEventScheduler(monome: monome)
         self.columns = monome.columns == 0 ? 16 : Int(monome.columns)
         self.rows = monome.rows == 0 ? 16 : Int(monome.rows)
         self.state = Life.defaultState(columns: self.columns, rows: self.rows)
 
         super.init(monome: monome, io: io)
+        self.applicationEventScheduler.eventHandler = { [weak self] in
+            guard let strongSelf = self else {
+                return
+            }
+            strongSelf.tick()
+        }
         self.name = Life.name()
         self.description = Life.description()
     }
@@ -92,8 +99,8 @@ final class Life: Application {
     }
 
     override func gridEvent(event: GridEvent) {
-        // TODO: Do something with the grid event
         if event.action == .buttonUp {
+            // TODO: Update life application state with event
 //            let x = Int(event.x)
 //            let y = Int(event.y)
         }
@@ -105,7 +112,9 @@ final class Life: Application {
         displayUsage()
         io.displayCarrot(name)
 
-        scheduler.start() // Start Monome Event Scheduler
+        // Event Schedulers
+        applicationEventScheduler.start()
+        monomeEventScheduler.start()
 
         // Listen for user input
         // TODO: Move this to an event schduler
@@ -125,6 +134,12 @@ final class Life: Application {
         // All done
         monome.all(.off)
         quit(EXIT_SUCCESS)
+    }
+
+    override func quit(_ exitStatus: Int32) {
+        applicationEventScheduler.stop()
+        monomeEventScheduler.stop()
+        super.quit(exitStatus)
     }
 }
 

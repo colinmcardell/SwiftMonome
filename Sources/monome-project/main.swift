@@ -92,7 +92,7 @@ class Main {
             return
         }
         self.monome = nil
-        io.writeMessage("Connection to Monome device (\(path)) CLOSED.")
+        io.writeMessage("CLOSED - Connection to Monome device (\(path)).")
     }
     
     func run() {

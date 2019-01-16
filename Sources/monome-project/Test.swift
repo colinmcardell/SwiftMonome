@@ -54,10 +54,6 @@ final class Test: Application {
         monome.intensity(15)
         quit(EXIT_SUCCESS)
     }
-
-    override func quit(_ exitStatus: Int32) {
-        delegate?.applicationDidFinish(self, exitStatus: exitStatus)
-    }
 }
 
 extension Test {
