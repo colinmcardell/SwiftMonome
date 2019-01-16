@@ -310,12 +310,22 @@ extension Monome {
 fileprivate extension Monome {
     func _handleEvent(_ event: Event) {
         switch event {
-        case is GridEvent: gridCallback?(self, event as! GridEvent)
-        case is ArcEvent: arcCallback?(self, event as! ArcEvent)
-        case is TiltEvent: tiltCallback?(self, event as! TiltEvent)
+        case is GridEvent:
+            gridCallback?(self, event as! GridEvent)
+            gridEventDelegate?.handleGridEvent(monome: self, event: event as! GridEvent)
+            break
+        case is ArcEvent:
+            arcCallback?(self, event as! ArcEvent)
+            arcEventDelegate?.handleArcEvent(monome: self, event: event as! ArcEvent)
+            break
+        case is TiltEvent:
+            tiltCallback?(self, event as! TiltEvent)
+            tiltEventDelegate?.handleTiltEvent(monome: self, event: event as! TiltEvent)
+            break
         default: break
         }
         eventHandler?(self, event)
+        eventDelegate?.handleEvent(monome: self, event: event)
     }
 }
 fileprivate func _underlyingEventHandler(monomeEvent: UnsafePointer<monome_event_t>?, userData: UnsafeMutableRawPointer?) {
