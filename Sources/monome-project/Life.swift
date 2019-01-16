@@ -117,6 +117,7 @@ final class Life: Application {
     let applicationEventScheduler: EventScheduler = EventScheduler(.highPriority)
     let columns: Int
     let rows: Int
+    var isRunning: Bool = false
     let updateLock = DispatchSemaphore(value: 1)
     var state: [[Cell]]
 
@@ -142,6 +143,8 @@ final class Life: Application {
 
     func displayUsage() {
         io.writeMessage("Usage:")
+        io.writeMessage("   r - Run \(name).")
+        io.writeMessage("   s - Suspend \(name).")
         io.writeMessage("   u - Display `\(name)` usage.")
         io.writeMessage("   q - Quit")
     }
@@ -149,7 +152,16 @@ final class Life: Application {
     override func gridEvent(event: GridEvent) {
         if event.action == .buttonUp {
             updateLock.wait()
-            state[Int(event.x)][Int(event.y)].modNext = true
+
+            if isRunning {
+                state[Int(event.x)][Int(event.y)].modNext = true
+            } else {
+                // Toggle
+                let modNext = !state[Int(event.x)][Int(event.y)].modNext
+                state[Int(event.x)][Int(event.y)].modNext = modNext
+                monome.set(x: event.x, y: event.y, status: modNext ? .on : .off)
+            }
+
             updateLock.signal()
         }
     }
@@ -158,7 +170,6 @@ final class Life: Application {
         // Application description & usage
         io.writeMessage(self)
         displayUsage()
-        io.displayCarrot(name)
 
         // Event Schedulers
         applicationEventScheduler.start()
@@ -167,14 +178,27 @@ final class Life: Application {
         // Listen for user input
         var shouldQuit: Bool = false
         while !shouldQuit {
+            io.displayCarrot(name)
             guard let input = io.getInput() else {
                 continue
             }
-            if input == "q" {
+            switch input {
+            case "q":
                 shouldQuit = true
-            } else {
+            case "r":
+                updateLock.wait()
+                isRunning = true;
+                updateLock.signal()
+                continue
+            case "s":
+                updateLock.wait()
+                isRunning = false
+                updateLock.signal()
+                continue
+            default:
                 displayUsage()
                 io.displayCarrot(name)
+                continue
             }
         }
 
@@ -206,6 +230,9 @@ extension Life {
     }
 
     func tick() {
+        guard isRunning else {
+            return
+        }
         for x in 0..<columns {
             for y in 0..<rows {
                 let cell = state[x][y]
