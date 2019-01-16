@@ -13,8 +13,8 @@ import SwiftMonome
 
 struct Point {
 
-    var x: Int
-    var y: Int
+    var x: UInt32
+    var y: UInt32
 }
 
 class Cell {
@@ -31,31 +31,54 @@ class Cell {
         self.coordinate = Point(x: 0, y: 0)
         self.nnum = 0
     }
+
     convenience init(coordinate: Point) {
         self.init()
         self.coordinate = coordinate
     }
+
+    private func _mod(_ dividend: Int, _ divisor: Int) -> Int {
+        precondition(divisor > 0, "divisor must to positive")
+        let remainder = dividend % divisor
+        return remainder >= 0 ? remainder : remainder + divisor
+    }
+
     func neighbors(_ world: [[Cell]]) -> [Cell] {
         let columns: Int = world.count
         let rows: Int = world[0].count
         var neighbors: [Cell] = Array()
-        neighbors[0] = world[(Int(coordinate.x) - 1) % columns][(Int(coordinate.y) - 1) % rows]
-        neighbors[1] = world[(Int(coordinate.x) - 1) % columns][(Int(coordinate.y) + 1) % rows]
-        neighbors[2] = world[(Int(coordinate.x) - 1) % columns][(Int(coordinate.y)) % rows]
+        var xOffset: Int = -1
+        var yOffset: Int = -1
+        neighbors.append(world[_mod(Int(coordinate.x) + xOffset, columns)][_mod(Int(coordinate.y) + yOffset, rows)]) // 0
+        yOffset = 1
+        neighbors.append(world[_mod(Int(coordinate.x) + xOffset, columns)][_mod(Int(coordinate.y) + yOffset, rows)]) // 1
+        yOffset = 0
+        neighbors.append(world[_mod(Int(coordinate.x) + xOffset, columns)][_mod(Int(coordinate.y) + yOffset, rows)]) // 2
 
-        neighbors[3] = world[(Int(coordinate.x) + 1) % columns][(Int(coordinate.y) - 1) % rows]
-        neighbors[4] = world[(Int(coordinate.x) + 1) % columns][(Int(coordinate.y) + 1) % rows]
-        neighbors[5] = world[(Int(coordinate.x) + 1) % columns][(Int(coordinate.y)) % rows]
+        xOffset = 1
+        yOffset = -1
+        neighbors.append(world[_mod(Int(coordinate.x) + xOffset, columns)][_mod(Int(coordinate.y) + yOffset, rows)]) // 3
+        yOffset = 1
+        neighbors.append(world[_mod(Int(coordinate.x) + xOffset, columns)][_mod(Int(coordinate.y) + yOffset, rows)]) // 4
+        yOffset = 0
+        neighbors.append(world[_mod(Int(coordinate.x) + xOffset, columns)][_mod(Int(coordinate.y) + yOffset, rows)]) // 5
 
-        neighbors[6] = world[(Int(coordinate.x)) % columns][(Int(coordinate.y) - 1) % rows]
-        neighbors[7] = world[(Int(coordinate.x)) % columns][(Int(coordinate.y) + 1) % rows]
+        xOffset = 0
+        yOffset = -1
+        neighbors.append(world[_mod(Int(coordinate.x) + xOffset, columns)][_mod(Int(coordinate.y) + yOffset, rows)]) // 6
+        yOffset = 1
+        neighbors.append(world[_mod(Int(coordinate.x) + xOffset, columns)][_mod(Int(coordinate.y) + yOffset, rows)]) // 7
         return neighbors
     }
 
     func modNeighbors(_ world: [[Cell]], delta: Int) {
         let neighbors = self.neighbors(world)
         for cell in neighbors {
-            cell.nnum += UInt8(delta) // TODO: What is happening here? Casting an Int to a UInt8 is going to do what to our number value?
+            if delta < 0 {
+                cell.nnum = cell.nnum &- UInt8(abs(delta))
+            } else {
+                cell.nnum = cell.nnum &+ UInt8(delta)
+            }
         }
     }
 }
@@ -73,6 +96,7 @@ final class Life: Application {
     let applicationEventScheduler: EventScheduler = EventScheduler(.highPriority)
     let columns: Int
     let rows: Int
+    let updateLock = DispatchSemaphore(value: 1)
     var state: [[Cell]]
 
     override init(monome: Monome, io: ConsoleIO) {
@@ -82,11 +106,14 @@ final class Life: Application {
         self.state = Life.defaultState(columns: self.columns, rows: self.rows)
 
         super.init(monome: monome, io: io)
+        self.applicationEventScheduler.interval = .milliseconds(75)
         self.applicationEventScheduler.eventHandler = { [weak self] in
             guard let strongSelf = self else {
                 return
             }
+            strongSelf.updateLock.wait()
             strongSelf.tick()
+            strongSelf.updateLock.signal()
         }
         self.name = Life.name()
         self.description = Life.description()
@@ -100,9 +127,9 @@ final class Life: Application {
 
     override func gridEvent(event: GridEvent) {
         if event.action == .buttonUp {
-            // TODO: Update life application state with event
-//            let x = Int(event.x)
-//            let y = Int(event.y)
+            updateLock.wait()
+            state[Int(event.x)][Int(event.y)].modNext = true
+            updateLock.signal()
         }
     }
 
@@ -117,7 +144,6 @@ final class Life: Application {
         monomeEventScheduler.start()
 
         // Listen for user input
-        // TODO: Move this to an event schduler
         var shouldQuit: Bool = false
         while !shouldQuit {
             guard let input = io.getInput() else {
@@ -150,8 +176,7 @@ extension Life {
         for x in 0..<columns {
             var column: [Cell] = Array()
             for y in 0..<rows {
-                let cell = Cell()
-                cell.coordinate = Point(x: x, y: y)
+                let cell = Cell(coordinate: Point(x: UInt32(x), y: UInt32(y)))
                 column.append(cell)
             }
             state.append(column)
@@ -159,24 +184,21 @@ extension Life {
         return state
     }
 
-    static func updateState(_ state: [[Cell]]) {
-        let columns: Int = state.count
-        let rows: Int = state[0].count
-
+    func tick() {
         for x in 0..<columns {
             for y in 0..<rows {
                 let cell = state[x][y]
 
                 if cell.modNext {
-                    var delta: Int = 0
                     if cell.isAlive {
                         cell.isAlive = false
-                        delta = 1
+                        cell.modNeighbors(state, delta: -1)
+                        monome.off(x: UInt32(x), y: UInt32(y))
                     } else {
                         cell.isAlive = true
-                        delta = -1
+                        cell.modNeighbors(state, delta: 1)
+                        monome.on(x: UInt32(x), y: UInt32(y))
                     }
-                    cell.modNeighbors(state, delta: delta)
                     cell.modNext = false
                 }
             }
@@ -191,39 +213,15 @@ extension Life {
                     if !cell.isAlive {
                         cell.modNext = true
                     }
-                    break
                 case 2:
                     break
                 default:
                     if cell.isAlive {
                         cell.modNext = true
                     }
+                    break
                 }
             }
         }
-    }
-
-    func chill(_ msec: Int) {
-        var rem = timespec(tv_sec: 0, tv_nsec: 0)
-        var req = timespec(tv_sec: msec * 1000000, tv_nsec: (msec * 1000000) / 1000000000)
-        req.tv_nsec = req.tv_nsec - req.tv_sec * 1000000000
-        nanosleep(&req, &rem)
-    }
-
-    func tick() {
-//        var nextWorld = Array(repeating: Array(repeating: Cell(), count: columns), count: rows)
-//        for x in 0..<columns {
-//            for y in 0..<rows {
-//                let cell = state[x][y]
-//
-//            }
-//        }
-//        for (x, row) in state.enumerated() {
-//            for (y, cell) in row.enumerated() {
-//                if cell.modNext != 0 {
-////                    cell.isAlive = !cell.isAlive
-//                }
-//            }
-//        }
     }
 }
