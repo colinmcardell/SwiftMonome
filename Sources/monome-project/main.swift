@@ -195,7 +195,6 @@ extension Main: ApplicationDelegate {
             io.writeMessage("\(application.name) did finish with status: \(exitStatus)", to: .error)
         }
         currentApplication = nil
-        monome?.clearHandlers()
         monome?.all(.off)
         monome?.intensity(.l15)
         displayUsage()

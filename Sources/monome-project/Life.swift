@@ -12,11 +12,13 @@ import Foundation
 import SwiftMonome
 
 struct Point {
+
     var x: Int
     var y: Int
 }
 
 class Cell {
+
     var isAlive: Bool
     var modNext: Bool
     var coordinate: Point
@@ -59,6 +61,7 @@ class Cell {
 }
 
 final class Life: Application {
+
     static func name() -> String {
         return "life"
     }
@@ -88,9 +91,15 @@ final class Life: Application {
         io.writeMessage("   q - Quit")
     }
 
-    override func run() {
+    override func gridEvent(event: GridEvent) {
+        // TODO: Do something with the grid event
+        if event.action == .buttonUp {
+//            let x = Int(event.x)
+//            let y = Int(event.y)
         }
+    }
 
+    override func run() {
         // Application description & usage
         io.writeMessage(self)
         displayUsage()
@@ -120,6 +129,7 @@ final class Life: Application {
 }
 
 extension Life {
+
     static func defaultState(columns: Int, rows: Int) -> [[Cell]] {
         var state: [[Cell]] = Array()
         for x in 0..<columns {

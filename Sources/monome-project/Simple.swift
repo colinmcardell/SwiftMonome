@@ -49,6 +49,21 @@ final class Simple: Application {
         io.writeMessage("   q - Quit")
     }
 
+    override func gridEvent(event: GridEvent) {
+        if event.action == .buttonUp {
+            // Toggle grid button LED status
+            let x = event.x
+            let y = event.y
+            let col = Int(x)
+            let row = Int(y)
+
+            let status = state[row][col]
+            let nextStatus: LED.Status = status == .on ? .off : .on
+            monome.set(x: x, y: y, status: nextStatus)
+            state[row][col] = nextStatus
+        }
+    }
+
     override func run() {
         // Monome setup & application state
         clear()
@@ -81,6 +96,6 @@ final class Simple: Application {
 
     override func quit(_ exitStatus: Int32) {
         scheduler.stop()
-        delegate?.applicationDidFinish(self, exitStatus: exitStatus)
+        super.quit(exitStatus)
     }
 }
