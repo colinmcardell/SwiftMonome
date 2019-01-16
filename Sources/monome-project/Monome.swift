@@ -3,11 +3,10 @@ import Foundation
 
 extension Monome {
 
-    func clearHandlers() {
-        unregisterHandler()
-        unregisterArcHandler()
-        unregisterGridHandler()
-        unregisterTiltHandler()
+    func clearEventHandlers() {
+        arcEventHandler = nil
+        gridEventHandler = nil
+        tiltEventHandler = nil
     }
 }
 

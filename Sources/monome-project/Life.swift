@@ -89,25 +89,6 @@ final class Life: Application {
     }
 
     override func run() {
-        // Monome setup & application state
-        monome.registerGridHandler { [weak self] (monome: Monome, event: GridEvent) in
-            _ = self // REMOVE: Just silencing weak self unused warning.
-            // TODO: Do something with the grid event
-            if event.action == .buttonUp {
-                // Toggle grid button LED status
-//                guard let strongSelf = self else {
-//                    return
-//                }
-//                let x = event.x
-//                let y = event.y
-//                let col = Int(x)
-//                let row = Int(y)
-
-//                let status = strongSelf.state[row][col]
-//                let nextStatus: LED.Status = status == .on ? .off : .on
-//                monome.set(x: x, y: y, status: nextStatus)
-//                strongSelf.state[row][col] = nextStatus
-            }
         }
 
         // Application description & usage
