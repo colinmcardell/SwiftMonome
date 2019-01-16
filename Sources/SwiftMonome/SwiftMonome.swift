@@ -1,18 +1,52 @@
 import clibmonome
 
-// MARK: - Monome
-public typealias MonomeEventCallback = ((Monome, Event) -> Void)
-public typealias MonomeGridCallback = ((Monome, GridEvent) -> Void)
-public typealias MonomeArcCallback = ((Monome, ArcEvent) -> Void)
-public typealias MonomeTiltCallback = ((Monome, TiltEvent) -> Void)
+// MARK: - Event Callbacks
+public typealias MonomeEventHandler = ((Event) -> Void)
+
+public typealias MonomeGridEventHandler = ((GridEvent) -> Void)
+
+public typealias MonomeArcEventHandler = ((ArcEvent) -> Void)
+
+public typealias MonomeTiltEventHandler = ((TiltEvent) -> Void)
+
+// MARK: - Event Delegate
+public protocol MonomeEventDelegate: AnyObject {
+    func handleEvent(monome: Monome, event: Event)
+}
+
+public protocol MonomeGridEventDelegate: AnyObject {
+    func handleGridEvent(monome: Monome, event: GridEvent)
+}
+
+public protocol MonomeArcEventDelegate: AnyObject {
+    func handleArcEvent(monome: Monome, event: ArcEvent)
+}
+
+public protocol MonomeTiltEventDelegate: AnyObject {
+    func handleTiltEvent(monome: Monome, event: TiltEvent)
+}
 
 public final class Monome {
+
     public static let DefaultDevice = "osc.udp://127.0.0.1:8080/monome"
+
     public let monome: OpaquePointer!
-    var eventHandler: MonomeEventCallback?
-    var gridCallback: MonomeGridCallback?
-    var arcCallback: MonomeArcCallback?
-    var tiltCallback: MonomeTiltCallback?
+
+    public var eventDelegate: MonomeEventDelegate?
+
+    public var gridEventDelegate: MonomeGridEventDelegate?
+
+    public var arcEventDelegate: MonomeArcEventDelegate?
+
+    public var tiltEventDelegate: MonomeTiltEventDelegate?
+
+    public var eventHandler: MonomeEventHandler?
+
+    public var gridEventHandler: MonomeGridEventHandler?
+
+    public var arcEventHandler: MonomeArcEventHandler?
+
+    public var tiltEventHandler: MonomeTiltEventHandler?
 
     // Lifecycle
     public init?(_ device: String = DefaultDevice) {
@@ -22,7 +56,7 @@ public final class Monome {
         self.monome = monome
 
         // Register internal handler for each of the event types
-        let pMonome = UnsafeMutableRawPointer(Unmanaged.passUnretained(self).toOpaque())
+        let pMonome = Unmanaged.passUnretained(self).toOpaque()
         UnderlyingEventType.allCases.forEach { type in
             monome_register_handler(self.monome, type.cType, _underlyingEventHandler, pMonome)
         }
@@ -92,30 +126,6 @@ extension Monome: CustomStringConvertible {
 
 // MARK: - Monome: Public Functions
 extension Monome {
-    public func registerHandler(_ handler: @escaping MonomeEventCallback) {
-        eventHandler = handler
-    }
-    public func unregisterHandler() {
-        eventHandler = nil
-    }
-    public func registerGridHandler(_ handler: @escaping MonomeGridCallback) {
-        gridCallback = handler
-    }
-    public func unregisterGridHandler() {
-        gridCallback = nil
-    }
-    public func registerArcHandler(_ handler: @escaping MonomeArcCallback) {
-        arcCallback = handler
-    }
-    public func unregisterArcHandler() {
-        arcCallback = nil
-    }
-    public func registerTiltHandler(_ handler: @escaping MonomeTiltCallback) {
-        tiltCallback = handler
-    }
-    public func unregisterTiltHandler() {
-        tiltCallback = nil
-    }
     public func eventHandleNext() {
         monome_event_handle_next(monome)
     }
@@ -276,12 +286,22 @@ extension Monome {
 fileprivate extension Monome {
     func _handleEvent(_ event: Event) {
         switch event {
-        case is GridEvent: gridCallback?(self, event as! GridEvent)
-        case is ArcEvent: arcCallback?(self, event as! ArcEvent)
-        case is TiltEvent: tiltCallback?(self, event as! TiltEvent)
+        case is GridEvent:
+            gridEventHandler?(event as! GridEvent)
+            gridEventDelegate?.handleGridEvent(monome: self, event: event as! GridEvent)
+            break
+        case is ArcEvent:
+            arcEventHandler?(event as! ArcEvent)
+            arcEventDelegate?.handleArcEvent(monome: self, event: event as! ArcEvent)
+            break
+        case is TiltEvent:
+            tiltEventHandler?(event as! TiltEvent)
+            tiltEventDelegate?.handleTiltEvent(monome: self, event: event as! TiltEvent)
+            break
         default: break
         }
-        eventHandler?(self, event)
+        eventHandler?(event)
+        eventDelegate?.handleEvent(monome: self, event: event)
     }
 }
 fileprivate func _underlyingEventHandler(monomeEvent: UnsafePointer<monome_event_t>?, userData: UnsafeMutableRawPointer?) {

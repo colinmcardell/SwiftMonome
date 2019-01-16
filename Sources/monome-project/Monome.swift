@@ -2,39 +2,78 @@ import SwiftMonome
 import Foundation
 
 extension Monome {
-    func clearHandlers() {
-        unregisterHandler()
-        unregisterArcHandler()
-        unregisterGridHandler()
-        unregisterTiltHandler()
+
+    func clearEventHandlers() {
+        arcEventHandler = nil
+        gridEventHandler = nil
+        tiltEventHandler = nil
     }
 }
 
-class MonomeEventScheduler {
-    let monome: Monome
+class EventScheduler {
+
+    enum SchedulerType {
+        case highPriority
+        case lowPriority
+        case background
+    }
+
+    typealias EventHandler = DispatchSourceProtocol.DispatchSourceHandler
+
     let queue: DispatchQueue
-    let timer: DispatchSourceTimer
+
+    var timer: DispatchSourceTimer?
+
+    var eventHandler: EventHandler?
+
     var interval: DispatchTimeInterval = .milliseconds(16)
 
-    init(monome: Monome) {
-        self.monome = monome
-        self.queue = DispatchQueue.global(qos: .userInteractive)
-        self.timer = DispatchSource.makeTimerSource(queue: self.queue)
-        self.timer.setEventHandler { [weak self] in
-            self?.monome.eventHandleNext()
+    init(_ type: SchedulerType = .highPriority) {
+        var dispatchQueue: DispatchQueue
+        switch type {
+        case .highPriority:
+            dispatchQueue = DispatchQueue.global(qos: .userInitiated)
+        case .lowPriority:
+            dispatchQueue = DispatchQueue.global(qos: .utility)
+        case .background:
+            dispatchQueue = DispatchQueue.global(qos: .background)
         }
+        self.queue = dispatchQueue
     }
+
     deinit {
-        // TODO: This crashes
-        timer.cancel()
+        stop()
     }
 
     func start() {
-        timer.schedule(deadline: .now(), repeating: interval)
-        timer.resume()
+        stop()
+        timer = DispatchSource.makeTimerSource(queue: queue)
+        timer?.setEventHandler { [weak self] in
+            guard let strongSelf = self, let eventHandler = strongSelf.eventHandler else { return }
+            eventHandler()
+        }
+        timer?.schedule(deadline: .now(), repeating: interval)
+        timer?.resume()
     }
 
     func stop() {
-        timer.suspend()
+        guard let timer = timer else { return }
+        timer.setEventHandler {}
+        timer.cancel()
+        self.timer = nil
+    }
+}
+
+class MonomeEventScheduler: EventScheduler {
+
+    let monome: Monome
+
+    init(monome: Monome) {
+        self.monome = monome
+        super.init(.highPriority)
+
+        self.eventHandler = { [weak self] in
+            self?.monome.eventHandleNext()
+        }
     }
 }

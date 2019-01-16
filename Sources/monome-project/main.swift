@@ -11,6 +11,7 @@ class Main {
         case help = "help"
         case open = "o"
         case quit = "q"
+        case life = "l"
         case simple = "s"
         case test = "t"
         case torture = "to"
@@ -23,6 +24,7 @@ class Main {
             case "help": self = .help
             case "o": self = .open
             case "q": self = .quit
+            case "l": self = .life
             case "s": self = .simple
             case "t": self = .test
             case "to": self = .torture
@@ -41,6 +43,8 @@ class Main {
                 return "    \(self.rawValue) - Open a connection with a Monome device."
             case .quit:
                 return "    \(self.rawValue) - Quit"
+            case .life:
+                return "    \(self.rawValue) - Load: \(Life.description())"
             case .simple:
                 return "    \(self.rawValue) - Load: \(Simple.description())"
             case .test:
@@ -66,6 +70,7 @@ class Main {
         io.writeMessage(OptionType.open.usage)
         io.writeMessage(OptionType.close.usage)
         io.writeMessage(OptionType.simple.usage)
+        io.writeMessage(OptionType.life.usage)
         io.writeMessage(OptionType.test.usage)
         io.writeMessage(OptionType.torture.usage)
         io.writeMessage(OptionType.usage.usage)
@@ -87,7 +92,7 @@ class Main {
             return
         }
         self.monome = nil
-        io.writeMessage("Connection to Monome device (\(path)) CLOSED.")
+        io.writeMessage("CLOSED - Connection to Monome device (\(path)).")
     }
     
     func run() {
@@ -109,7 +114,8 @@ class Main {
                     continue
                 }
                 if path.count == 0 {
-                    monome = Monome()
+//                    monome = Monome()
+                    monome = Monome("/dev/cu.usbserial-m1000286")
                 } else {
                     monome = Monome(path)
                 }
@@ -131,6 +137,15 @@ class Main {
                     continue
                 }
                 currentApplication = Simple(monome: monome, io: io)
+                currentApplication?.delegate = self
+                currentApplication?.run()
+                continue
+            case .life:
+                guard let monome = monome else {
+                    io.writeMessage("Monome device connection unavailable, try opening a connect [o]", to: .error)
+                    continue
+                }
+                currentApplication = Life(monome: monome, io: io)
                 currentApplication?.delegate = self
                 currentApplication?.run()
                 continue
@@ -180,7 +195,6 @@ extension Main: ApplicationDelegate {
             io.writeMessage("\(application.name) did finish with status: \(exitStatus)", to: .error)
         }
         currentApplication = nil
-        monome?.clearHandlers()
         monome?.all(.off)
         monome?.intensity(.l15)
         displayUsage()

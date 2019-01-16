@@ -54,10 +54,6 @@ final class Test: Application {
         monome.intensity(15)
         quit(EXIT_SUCCESS)
     }
-
-    override func quit(_ exitStatus: Int32) {
-        delegate?.applicationDidFinish(self, exitStatus: exitStatus)
-    }
 }
 
 extension Test {
@@ -124,10 +120,10 @@ extension Test {
     }
     func testLedMap() {
         var pattern: [[UInt8]] = [
-            [0, 34, 20, 8, 8, 8, 8, 0],
-            [0, 126, 2, 2, 30, 2, 126, 0],
-            [0, 124, 66, 66, 126, 66, 66, 0],
-            [0, 36, 36, 36, 60, 36, 36, 0],
+            [0, 34, 20, 8, 8, 8, 8, 0],         // Y
+            [0, 126, 2, 2, 30, 2, 126, 0],      // E
+            [0, 124, 66, 66, 126, 66, 66, 0],   // A
+            [0, 36, 36, 36, 60, 36, 36, 0],     // H
         ]
         var q: Int = 0
         for l in 0..<8 {
@@ -151,12 +147,14 @@ extension Test {
     }
     func testLedRingSet() {
         let yeah = UnsafeMutablePointer<UInt8>.allocate(capacity: 64)
+        defer {
+            yeah.deallocate()
+        }
         for i in 0..<1024 {
             memset(yeah, 0, 64)
             yeah[i & 63] = 15
             monome.ringMap(ring: 0, levels: yeah)
             chill(32)
         }
-        yeah.deallocate()
     }
 }

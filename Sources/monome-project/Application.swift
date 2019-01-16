@@ -6,6 +6,7 @@ import Darwin
 import SwiftMonome
 
 class Application: CustomStringConvertible {
+
     let monome: Monome
     let io: ConsoleIO
     var name: String = "" // TODO: This doesn't need to exists if I have static funcs that do the same thing
@@ -16,16 +17,33 @@ class Application: CustomStringConvertible {
     init(monome: Monome, io: ConsoleIO) {
         self.monome = monome
         self.io = io
+
+        self.monome.gridEventDelegate = self
+    }
+
+    func gridEvent(event: GridEvent) {
+        // Override in subclass
     }
 
     func run() {
         quit(EXIT_SUCCESS)
     }
     func quit(_ exitStatus: Int32) {
+        monome.clearEventHandlers()
+        monome.gridEventDelegate = nil
         delegate?.applicationDidFinish(self, exitStatus: exitStatus)
     }
 }
 
+// Application - Event Handling
+extension Application: MonomeGridEventDelegate {
+
+    func handleGridEvent(monome: Monome, event: GridEvent) {
+        gridEvent(event: event)
+    }
+}
+
 protocol ApplicationDelegate: AnyObject {
+
     func applicationDidFinish(_ application: Application, exitStatus: Int32)
 }
