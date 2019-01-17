@@ -21,7 +21,7 @@ final class Simple: Application {
     }
 
     let scheduler: MonomeEventScheduler
-    var state: [[LED.Status]] = Array(repeating: Array(repeating: .off, count: 16), count: 16)
+    var state = [[UInt8]](repeating: [UInt8](repeating: 0, count: 16), count: 16)
 
     override init(monome: Monome, io: ConsoleIO) {
         self.scheduler = MonomeEventScheduler(monome: monome)
@@ -40,8 +40,8 @@ final class Simple: Application {
         if rows == 0 {
             rows = 16
         }
-        state = Array(repeating: Array(repeating: .off, count: columns), count: rows)
-        monome.all(.off)
+        state = [[UInt8]](repeating: [UInt8](repeating: 0, count: columns), count: rows)
+        monome.all(0)
     }
 
     func displayUsage() {
@@ -59,7 +59,7 @@ final class Simple: Application {
             let row = Int(y)
 
             let status = state[row][col]
-            let nextStatus: LED.Status = status == .on ? .off : .on
+            let nextStatus: UInt8 = status == 1 ? 0 : 1
             monome.set(x: x, y: y, status: nextStatus)
             state[row][col] = nextStatus
         }
@@ -91,7 +91,7 @@ final class Simple: Application {
         }
 
         // All done
-        monome.all(.off)
+        monome.all(0)
         quit(EXIT_SUCCESS)
     }
 

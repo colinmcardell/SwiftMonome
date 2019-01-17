@@ -125,7 +125,7 @@ class Main {
                     io.writeMessage("Connection to Monome device at provided path failed.", to: .error)
                     continue
                 }
-                monome.all(.off)
+                monome.all(0)
                 io.writeMessage(monome)
             case .close:
                 close()
@@ -197,8 +197,8 @@ extension Main: ApplicationDelegate {
             io.writeMessage("\(application.name) did finish with status: \(exitStatus)", to: .error)
         }
         currentApplication = nil
-        monome?.all(.off)
-        monome?.intensity(.l15)
+        monome?.all(0)
+        monome?.intensity(15)
         displayUsage()
     }
 }

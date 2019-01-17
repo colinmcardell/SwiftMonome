@@ -137,11 +137,8 @@ extension Monome {
     }
 
     // MARK: - Monome: Grid Commands
-    public func set(x: UInt32, y: UInt32, status: UInt32) {
-        monome_led_set(monome, x, y, status)
-    }
-    public func set(x: UInt32, y: UInt32, status: LED.Status) {
-        set(x: x, y: y, status: status.rawValue)
+    public func set(x: UInt32, y: UInt32, status: UInt8) {
+        monome_led_set(monome, x, y, UInt32(status))
     }
 
     public func on(x: UInt32, y: UInt32) {
@@ -151,124 +148,65 @@ extension Monome {
         monome_led_off(monome, x, y)
     }
 
-    public func all(_ status: UInt32) {
-        monome_led_all(monome, status)
-    }
-    public func all(_ status: LED.Status) {
-        all(status.rawValue)
+    public func all(_ status: UInt8) {
+        monome_led_all(monome, UInt32(status))
     }
 
     public func map(xOffset: UInt32, yOffset: UInt32, data: UnsafePointer<UInt8>!) {
         monome_led_map(monome, xOffset, yOffset, data)
     }
-    public func map(xOffset: UInt32, yOffset: UInt32, data: [[LED.Status]]) {
-        // TODO: Return type (-1 is an error, I think...)
-        map(xOffset: xOffset, yOffset: yOffset, data: data.toBytes())
-    }
 
     public func column(x: UInt32, yOffset: UInt32, count: Int, data: UnsafePointer<UInt8>!) {
         monome_led_col(monome, x, yOffset, count, data)
-    }
-    public func column(x: UInt32, yOffset: UInt32, data: [LED.Status]) {
-        // TODO: Return type (-1 is an error, I think...)
-        let bytes = data.toBytes()
-        column(x: x, yOffset: yOffset, count: bytes.count, data: bytes)
     }
 
     public func row(xOffset: UInt32, y: UInt32, count: Int, data: UnsafePointer<UInt8>!) {
         monome_led_row(monome, xOffset, y, count, data)
     }
-    public func row(xOffset: UInt32, y: UInt32, data: [LED.Status]) {
-        // TODO: Return type (-1 is an error, I think...)
-        let bytes = data.toBytes()
-        row(xOffset: xOffset, y: y, count: bytes.count, data: bytes)
+
+    public func intensity(_ level: UInt8) {
+        monome_led_intensity(monome, UInt32(level))
     }
 
-    public func intensity(_ level: UInt32) {
-        monome_led_intensity(monome, level)
-    }
-    public func intensity(_ level: LED.Level) {
+    public func levelSet(x: UInt32, y: UInt32, level: UInt8) {
         // TODO: Return type (-1 is an error, I think...)
-        intensity(level.rawValue)
+        monome_led_level_set(monome, x, y, UInt32(level))
     }
 
-    public func levelSet(x: UInt32, y: UInt32, level: UInt32) {
-        // TODO: Return type (-1 is an error, I think...)
-        monome_led_level_set(monome, x, y, level)
-    }
-    public func levelSet(x: UInt32, y: UInt32, level: LED.Level) {
-        // TODO: Return type (-1 is an error, I think...)
-        levelSet(x: x, y: y, level: level.rawValue)
-    }
-
-    public func levelAll(_ level: UInt32) {
-        monome_led_level_all(monome, level)
-    }
-    public func levelAll(_ level: LED.Level) {
-        // TODO: Return type (-1 is an error, I think...)
-        levelAll(level.rawValue)
+    public func levelAll(_ level: UInt8) {
+        monome_led_level_all(monome, UInt32(level))
     }
 
     public func levelMap(xOffset: UInt32, yOffset: UInt32, data: UnsafePointer<UInt8>!) {
         monome_led_level_map(monome, xOffset, yOffset, data)
-    }
-    public func levelMap(xOffset: UInt32, yOffset: UInt32, data: [[LED.Level]]) {
-        // TODO: Return type (-1 is an error, I think...)
-        levelMap(xOffset: xOffset, yOffset: yOffset, data: data.toBytes())
     }
 
     public func levelRow(xOffset: UInt32, y: UInt32, count: Int, data: UnsafePointer<UInt8>!) {
         // TODO: Return type (-1 is an error, I think...)
         monome_led_level_row(monome, xOffset, y, count, data)
     }
-    public func levelRow(xOffset: UInt32, y: UInt32, data: [LED.Level]) {
-        // TODO: Return type (-1 is an error, I think...)
-        levelRow(xOffset: xOffset, y: y, count: data.count, data: data.toBytes())
-    }
 
     public func levelColumn(x: UInt32, yOffset: UInt32, count: Int, data: UnsafePointer<UInt8>!) {
         // TODO: Return type (-1 is an error, I think...)
         monome_led_level_col(monome, x, yOffset, count, data)
     }
-    public func levelColumn(x: UInt32, yOffset: UInt32, data: [LED.Level]) {
-        // TODO: Return type (-1 is an error, I think...)
-        levelColumn(x: x, yOffset: yOffset, count: data.count, data: data.toBytes())
-    }
 
     // MARK: - Monome: LED Ring Commands
-    public func ringSet(ring: UInt32, led: UInt32, level: UInt32) {
-        // TODO: Return type (-1 is an error, I think...)
-        monome_led_ring_set(monome, ring, led, level)
-    }
-    public func ringSet(ring: UInt32, led: UInt32, level: LED.Level) {
-        // TODO: Return type (-1 is an error, I think...)
-        ringSet(ring: ring, led: led, level: level.rawValue)
+    public func ringSet(ring: UInt32, led: UInt32, level: UInt8) {
+        monome_led_ring_set(monome, ring, led, UInt32(level))
     }
 
-    public func ringAll(ring: UInt32, level: UInt32) {
-        // TODO: Return type (-1 is an error, I think...)
-        monome_led_ring_all(monome, ring, level)
-    }
-    public func ringAll(ring: UInt32, level: LED.Level) {
-        // TODO: Return type (-1 is an error, I think...)
-        ringAll(ring: ring, level: level.rawValue)
+    public func ringAll(ring: UInt32, level: UInt8) {
+        monome_led_ring_all(monome, ring, UInt32(level))
     }
 
     public func ringMap(ring: UInt32, levels: UnsafePointer<UInt8>!) {
         monome_led_ring_map(monome, ring, levels)
     }
-    public func ringMap(ring: UInt32, levels: [[LED.Level]]) {
-        // TODO: Return type (-1 is an error, I think...)
-        ringMap(ring: ring, levels: levels.toBytes())
-    }
 
-    public func ringRange(ring: UInt32, start: UInt32, end: UInt32, level: UInt32) {
+    public func ringRange(ring: UInt32, start: UInt32, end: UInt32, level: UInt8) {
         // TODO: Return type (-1 is an error, I think...)
-        monome_led_ring_range(monome, ring, start, end, level)
-    }
-    public func ringRange(ring: UInt32, start: UInt32, end: UInt32, level: LED.Level) {
-        // TODO: Return type (-1 is an error, I think...)
-        ringRange(ring: ring, start: start, end: end, level: level.rawValue)
+        monome_led_ring_range(monome, ring, start, end, UInt32(level))
     }
 
     // MARK: - Monome: Tilt Commands
@@ -488,74 +426,6 @@ extension UnderlyingEventType {
         case .encoderKeyUp: return MONOME_ENCODER_KEY_UP
         case .encoderKeyDown: return MONOME_ENCODER_KEY_DOWN
         case .tilt: return MONOME_TILT
-        }
-    }
-}
-
-public enum LED {
-    public enum Status: UInt32 {
-        case off = 0
-        case on = 1
-        public init(_ value: Int) {
-            self = value <= 0 ? .off : .on
-        }
-    }
-    public enum Level: UInt32 {
-        case l00 = 0
-        case l01 = 1
-        case l02 = 2
-        case l03 = 3
-        case l04 = 4
-        case l05 = 5
-        case l06 = 6
-        case l07 = 7
-        case l08 = 8
-        case l09 = 9
-        case l10 = 10
-        case l11 = 11
-        case l12 = 12
-        case l13 = 13
-        case l14 = 14
-        case l15 = 15
-    }
-}
-
-extension Array where Element == LED.Status {
-    func toBytes() -> [UInt8] {
-        let numBytes = (count + 7) / 8
-        var bytes = [UInt8](repeating: 0, count: numBytes)
-
-        for (index, status) in self.enumerated() {
-            if status.rawValue == 1 {
-                bytes[index / 8] += UInt8(1 << (index % 8))
-            }
-        }
-        return bytes
-    }
-}
-
-extension Array where Element == LED.Level {
-    func toBytes() -> [UInt8] {
-        return self.map({ level -> UInt8 in
-            return UInt8(level.rawValue)
-        })
-    }
-}
-
-extension Array where Element == [LED.Status] {
-    func toBytes() -> [UInt8] {
-        return self.flatMap { (value) -> [UInt8] in
-            return value.toBytes()
-        }
-    }
-}
-
-extension Array where Element == [LED.Level] {
-    func toBytes() -> [UInt8] {
-        return self.flatMap { value -> [UInt8] in
-            return value.map({ level -> UInt8 in
-                return UInt8(level.rawValue)
-            })
         }
     }
 }

@@ -160,7 +160,7 @@ final class Life: Application {
                 // Toggle
                 let modNext = !state[Int(event.x)][Int(event.y)].modNext
                 state[Int(event.x)][Int(event.y)].modNext = modNext
-                monome.set(x: event.x, y: event.y, status: modNext ? .on : .off)
+                monome.set(x: event.x, y: event.y, status: modNext ? 1 : 0)
             }
 
             updateLock.signal()
@@ -204,7 +204,7 @@ final class Life: Application {
         }
 
         // All done
-        monome.all(.off)
+        monome.all(0)
         quit(EXIT_SUCCESS)
     }
 

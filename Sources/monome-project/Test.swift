@@ -27,7 +27,7 @@ final class Test: Application {
     }
 
     override func run() {
-        monome.all(.off)
+        monome.all(0)
         monome.intensity(15)
 
         // Application description & usage
@@ -35,15 +35,15 @@ final class Test: Application {
         io.writeMessage("Running \(name)...")
 
         for _ in 0..<2 {
-            testLedRow8(.on)
-            testLedCol8(.on)
+            testLedRow8(1)
+            testLedCol8(1)
         }
         for _ in 0..<2 {
-            testLedRow16(.on)
-            testLedCol16(.on)
+            testLedRow16(1)
+            testLedCol16(1)
         }
 
-        testLedCol16(.off)
+        testLedCol16(0)
         testLedOnOff()
         testLedMap()
 
@@ -51,7 +51,7 @@ final class Test: Application {
 
         fadeOut()
 
-        monome.all(.off)
+        monome.all(0)
         monome.intensity(15)
         quit(EXIT_SUCCESS)
     }
@@ -69,15 +69,15 @@ extension Test {
         while s >= 0 {
             for i in 0..<16 {
                 for j in 0..<16 {
-                    monome.set(x: UInt32(j), y: UInt32(i), status: LED.Status(s))
+                    monome.set(x: UInt32(j), y: UInt32(i), status: UInt8(s))
                     chill(128)
                 }
             }
             s -= 1
         }
     }
-    func testLedRow8(_ status: LED.Status) {
-        var on: UInt8 = status == .on ? 1 : 0
+    func testLedRow8(_ status: UInt8) {
+        var on = status
         for i in 0..<8 {
             monome.row(xOffset: 0, y: UInt32(i), count: 1, data: &on)
             chill(16)
@@ -90,8 +90,8 @@ extension Test {
             on >>= 1
         }
     }
-    func testLedCol8(_ status: LED.Status) {
-        var on: UInt8 = status == .on ? 1 : 0
+    func testLedCol8(_ status: UInt8) {
+        var on = status
         for i in 0..<8 {
             monome.column(x: UInt32(i), yOffset: 0, count: 1, data: &on)
             chill(16)
@@ -103,16 +103,16 @@ extension Test {
             on >>= 1
         }
     }
-    func testLedRow16(_ status: LED.Status) {
-        var on: UInt8 = status == .on ? 1 : 0
+    func testLedRow16(_ status: UInt8) {
+        var on = status
         for i in 0..<16 {
             monome.row(xOffset: 0, y: UInt32(i), count: 2, data: &on)
             chill(16)
             on |= on << 1
         }
     }
-    func testLedCol16(_ status: LED.Status) {
-        var on: UInt8 = status == .on ? 1 : 0
+    func testLedCol16(_ status: UInt8) {
+        var on = status
         for i in 0..<16 {
             monome.column(x: UInt32(i), yOffset: 0, count: 2, data: &on)
             chill(16)
@@ -142,17 +142,14 @@ extension Test {
         var i: Int = 0x10
         while(i > 0) {
             i -= 1
-            monome.intensity(UInt32(i))
+            monome.intensity(UInt8(i))
             chill(16)
         }
     }
     func testLedRingSet() {
-        let yeah = UnsafeMutablePointer<UInt8>.allocate(capacity: 64)
-        defer {
-            yeah.deallocate()
-        }
+        var yeah: [UInt8]
         for i in 0..<1024 {
-            memset(yeah, 0, 64)
+            yeah = [UInt8](repeating: 0, count: 64)
             yeah[i & 63] = 15
             monome.ringMap(ring: 0, levels: yeah)
             chill(32)

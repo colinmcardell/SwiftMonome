@@ -36,7 +36,7 @@ final class Torture: Application {
     }
 
     override func run() {
-        monome.all(.off)
+        monome.all(0)
         monome.intensity(15)
 
         // Application description & usage
@@ -53,7 +53,7 @@ final class Torture: Application {
                 buf.withMemoryRebound(to: UInt8.self, capacity: 2) {
                     monome.row(xOffset: UInt32(y), y: UInt32(w / 8), count: y, data: $0)
                 }
-                monome.set(x: UInt32(w - 1), y: UInt32(y), status: UInt32(getRandom() & 1))
+                monome.set(x: UInt32(w - 1), y: UInt32(y), status: UInt8(getRandom() & 1))
                 randomChill()
             }
             s = (s == 0) ? 1 : 0
