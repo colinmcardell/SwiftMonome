@@ -72,7 +72,7 @@ extension Test {
         while s >= 0 {
             for i in 0..<16 {
                 for j in 0..<16 {
-                    monome.set(x: UInt32(j), y: UInt32(i), status: UInt8(s))
+                    monome.set(x: j, y: i, status: UInt8(s))
                     chill(128)
                 }
             }
@@ -83,13 +83,13 @@ extension Test {
     func testLedRow8(_ status: UInt8) {
         var on = status
         for i in 0..<8 {
-            monome.row(xOffset: 0, y: UInt32(i), data: [on], shouldReduceBytes: false)
+            monome.row(xOffset: 0, y: i, data: [on], shouldReduceBytes: false)
             chill(16)
             on |= on << 1
         }
 
         for i in 8..<16 {
-            monome.row(xOffset: 0, y: UInt32(i), data: [on], shouldReduceBytes: false)
+            monome.row(xOffset: 0, y: i, data: [on], shouldReduceBytes: false)
             chill(16)
             on >>= 1
         }
@@ -98,12 +98,12 @@ extension Test {
     func testLedCol8(_ status: UInt8) {
         var on = status
         for i in 0..<8 {
-            monome.column(x: UInt32(i), yOffset: 0, data: [on], shouldReduceBytes: false)
+            monome.column(x: i, yOffset: 0, data: [on], shouldReduceBytes: false)
             chill(16)
             on |= on << 1
         }
         for i in 8..<16 {
-            monome.column(x: UInt32(i), yOffset: 0, data: [on], shouldReduceBytes: false)
+            monome.column(x: i, yOffset: 0, data: [on], shouldReduceBytes: false)
             chill(16)
             on >>= 1
         }
@@ -118,7 +118,7 @@ extension Test {
         for i in 0..<16 {
             buf.withMemoryRebound(to: UInt8.self, capacity: 2) {
                 let data: [UInt8] = [UInt8](UnsafeMutableBufferPointer(start: $0, count: 2))
-                monome.row(xOffset: 0, y: UInt32(i), data: data, shouldReduceBytes: false)
+                monome.row(xOffset: 0, y: i, data: data, shouldReduceBytes: false)
             }
             chill(16)
             buf.pointee |= buf.pointee << 1
@@ -134,7 +134,7 @@ extension Test {
         for i in 0..<16 {
             buf.withMemoryRebound(to: UInt8.self, capacity: 2) {
                 let data: [UInt8] = [UInt8](UnsafeMutableBufferPointer(start: $0, count: 2))
-                monome.column(x: UInt32(i), yOffset: 0, data: data, shouldReduceBytes: false)
+                monome.column(x: i, yOffset: 0, data: data, shouldReduceBytes: false)
             }
             chill(16)
             buf.pointee |= buf.pointee << 1
@@ -150,7 +150,7 @@ extension Test {
         ]
         var q: Int = 0
         for l in 0..<8 {
-            monome.map(xOffset: UInt32(((q & 1) * 8)), yOffset: UInt32(((q & 2) * 4)), data: pattern[q])
+            monome.map(xOffset: ((q & 1) * 8), yOffset: ((q & 2) * 4), data: pattern[q])
             for i in 0..<8 {
                 pattern[q][i] ^= 0xFF
             }

@@ -154,13 +154,16 @@ final class Life: Application {
         if event.action == .buttonUp {
             updateLock.wait()
 
+            let x = event.x
+            let y = event.y
+
             if isRunning {
-                state[Int(event.x)][Int(event.y)].modNext = true
+                state[x][y].modNext = true
             } else {
                 // Toggle
-                let modNext = !state[Int(event.x)][Int(event.y)].modNext
-                state[Int(event.x)][Int(event.y)].modNext = modNext
-                monome.set(x: event.x, y: event.y, status: modNext ? 1 : 0)
+                let modNext = !state[x][y].modNext
+                state[x][y].modNext = modNext
+                monome.set(x: x, y: y, status: modNext ? 1 : 0)
             }
 
             updateLock.signal()
@@ -242,11 +245,11 @@ extension Life {
                     if cell.isAlive {
                         cell.isAlive = false
                         cell.modNeighbors(state, delta: -1)
-                        monome.off(x: UInt32(x), y: UInt32(y))
+                        monome.off(x: x, y: y)
                     } else {
                         cell.isAlive = true
                         cell.modNeighbors(state, delta: 1)
-                        monome.on(x: UInt32(x), y: UInt32(y))
+                        monome.on(x: x, y: y)
                     }
                     cell.modNext = false
                 }

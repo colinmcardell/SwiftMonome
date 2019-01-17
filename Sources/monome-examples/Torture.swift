@@ -52,9 +52,9 @@ final class Torture: Application {
                 buf.pointee = (1 << UInt16(y)) - s
                 buf.withMemoryRebound(to: UInt8.self, capacity: 2) {
                     let data: [UInt8] = [UInt8](UnsafeMutableBufferPointer(start: $0, count: 2))
-                    monome.row(xOffset: UInt32(y), y: UInt32(w / 8), count: y, data: data)
+                    monome.row(xOffset: y, y: (w / 8), count: y, data: data)
                 }
-                monome.set(x: UInt32(w - 1), y: UInt32(y), status: UInt8(getRandom() & 1))
+                monome.set(x: w - 1, y: y, status: UInt8(getRandom() & 1))
                 randomChill()
             }
             s = (s == 0) ? 1 : 0

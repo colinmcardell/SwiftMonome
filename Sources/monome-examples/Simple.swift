@@ -55,13 +55,11 @@ final class Simple: Application {
             // Toggle grid button LED status
             let x = event.x
             let y = event.y
-            let col = Int(x)
-            let row = Int(y)
 
-            let status = state[row][col]
+            let status = state[x][y]
             let nextStatus: UInt8 = status == 1 ? 0 : 1
             monome.set(x: x, y: y, status: nextStatus)
-            state[row][col] = nextStatus
+            state[x][y] = nextStatus
         }
     }
 

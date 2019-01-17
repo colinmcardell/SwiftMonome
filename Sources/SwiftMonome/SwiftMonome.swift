@@ -137,23 +137,23 @@ extension Monome {
     }
 
     // MARK: - Monome: Grid Commands
-    public func set(x: UInt32, y: UInt32, status: UInt8) {
-        monome_led_set(monome, x, y, UInt32(status))
+    public func set(x: Int, y: Int, status: UInt8) {
+        monome_led_set(monome, UInt32(x), UInt32(y), UInt32(status))
     }
 
-    public func on(x: UInt32, y: UInt32) {
-        monome_led_on(monome, x, y)
+    public func on(x: Int, y: Int) {
+        monome_led_on(monome, UInt32(x), UInt32(y))
     }
-    public func off(x: UInt32, y: UInt32) {
-        monome_led_off(monome, x, y)
+    public func off(x: Int, y: Int) {
+        monome_led_off(monome, UInt32(x), UInt32(y))
     }
 
     public func all(_ status: UInt8) {
         monome_led_all(monome, UInt32(status))
     }
 
-    public func map(xOffset: UInt32, yOffset: UInt32, data: [UInt8]) {
-        monome_led_map(monome, xOffset, yOffset, data)
+    public func map(xOffset: Int, yOffset: Int, data: [UInt8]) {
+        monome_led_map(monome, UInt32(xOffset), UInt32(yOffset), data)
     }
 
     /// Set a column by sending either an array of 0s or 1s or a byte buffer.
@@ -166,10 +166,10 @@ extension Monome {
     ///   - count: Number of "bits" contained in the data array (aka number of LEDs to set in the column).
     ///   - data: An array of values, either UInt8 values of 0 or 1, or an actual byte buffer (let data = UInt8(0b010101)). The former being the default, where each element in the array is treated as a bit and the values are packed up into a byte buffer before sending them to the device, the latter being non-default and configurable by setting `shouldReduceBytes` to `false`.
     ///   - shouldReduceBytes: Optional value that is used to indicate if the `data` passed to this function should be treated as an array of UInt8 with each value either 0 or 1 (which means that it should be reduced to a byte buffer), or if the `data` is already a byte buffer.
-    public func column(x: UInt32, yOffset: UInt32, count: Int, data: [UInt8], shouldReduceBytes: Bool = true) {
-        monome_led_col(monome, x, yOffset, count, shouldReduceBytes ? data.pack() : data)
+    public func column(x: Int, yOffset: Int, count: Int, data: [UInt8], shouldReduceBytes: Bool = true) {
+        monome_led_col(monome, UInt32(x), UInt32(yOffset), count, shouldReduceBytes ? data.pack() : data)
     }
-    public func column(x: UInt32, yOffset: UInt32, data: [UInt8], shouldReduceBytes: Bool = true) {
+    public func column(x: Int, yOffset: Int, data: [UInt8], shouldReduceBytes: Bool = true) {
         let d = shouldReduceBytes ? data.pack() : data
         column(x: x, yOffset: yOffset, count: d.count, data: d, shouldReduceBytes: false)
     }
@@ -184,10 +184,10 @@ extension Monome {
     ///   - count: Number of "bits" contained in the data array (aka number of LEDs to set in the column).
     ///   - data: An array of values, either UInt8 values of 0 or 1, or an actual byte buffer (let data = UInt8(0b010101)). The former being the default, where each element in the array is treated as a bit and the values are packed up into a byte buffer before sending them to the device, the latter being non-default and configurable by setting `shouldReduceBytes` to `false`.
     ///   - shouldReduceBytes: Optional value that is used to indicate if the `data` passed to this function should be treated as an array of UInt8 with each value either 0 or 1 (which means that it should be reduced to a byte buffer), or if the `data` is already a byte buffer.
-    public func row(xOffset: UInt32, y: UInt32, count: Int, data: [UInt8], shouldReduceBytes: Bool = true) {
-        monome_led_row(monome, xOffset, y, count, shouldReduceBytes ? data.pack() : data)
+    public func row(xOffset: Int, y: Int, count: Int, data: [UInt8], shouldReduceBytes: Bool = true) {
+        monome_led_row(monome, UInt32(xOffset), UInt32(y), count, shouldReduceBytes ? data.pack() : data)
     }
-    public func row(xOffset: UInt32, y: UInt32, data: [UInt8], shouldReduceBytes: Bool = true) {
+    public func row(xOffset: Int, y: Int, data: [UInt8], shouldReduceBytes: Bool = true) {
         let d = shouldReduceBytes ? data.pack() : data
         row(xOffset: xOffset, y: y, count: d.count, data: data, shouldReduceBytes: false)
     }
@@ -196,49 +196,49 @@ extension Monome {
         monome_led_intensity(monome, UInt32(level))
     }
 
-    public func levelSet(x: UInt32, y: UInt32, level: UInt8) {
-        monome_led_level_set(monome, x, y, UInt32(level))
+    public func levelSet(x: Int, y: Int, level: UInt8) {
+        monome_led_level_set(monome, UInt32(x), UInt32(y), UInt32(level))
     }
 
     public func levelAll(_ level: UInt8) {
         monome_led_level_all(monome, UInt32(level))
     }
 
-    public func levelMap(xOffset: UInt32, yOffset: UInt32, data: [UInt8]) {
-        monome_led_level_map(monome, xOffset, yOffset, data)
+    public func levelMap(xOffset: Int, yOffset: Int, data: [UInt8]) {
+        monome_led_level_map(monome, UInt32(xOffset), UInt32(yOffset), data)
     }
 
-    public func levelRow(xOffset: UInt32, y: UInt32, count: Int, data: [UInt8]) {
-        monome_led_level_row(monome, xOffset, y, count, data)
+    public func levelRow(xOffset: Int, y: Int, count: Int, data: [UInt8]) {
+        monome_led_level_row(monome, UInt32(xOffset), UInt32(y), count, data)
     }
 
-    public func levelColumn(x: UInt32, yOffset: UInt32, count: Int, data: [UInt8]) {
-        monome_led_level_col(monome, x, yOffset, count, data)
+    public func levelColumn(x: Int, yOffset: Int, count: Int, data: [UInt8]) {
+        monome_led_level_col(monome, UInt32(x), UInt32(yOffset), count, data)
     }
 
     // MARK: - Monome: LED Ring Commands
-    public func ringSet(ring: UInt32, led: UInt32, level: UInt8) {
-        monome_led_ring_set(monome, ring, led, UInt32(level))
+    public func ringSet(ring: Int, led: Int, level: UInt8) {
+        monome_led_ring_set(monome, UInt32(ring), UInt32(led), UInt32(level))
     }
 
-    public func ringAll(ring: UInt32, level: UInt8) {
-        monome_led_ring_all(monome, ring, UInt32(level))
+    public func ringAll(ring: Int, level: UInt8) {
+        monome_led_ring_all(monome, UInt32(ring), UInt32(level))
     }
 
-    public func ringMap(ring: UInt32, levels: [UInt8]) {
-        monome_led_ring_map(monome, ring, levels)
+    public func ringMap(ring: Int, levels: [UInt8]) {
+        monome_led_ring_map(monome, UInt32(ring), levels)
     }
 
-    public func ringRange(ring: UInt32, start: UInt32, end: UInt32, level: UInt8) {
-        monome_led_ring_range(monome, ring, start, end, UInt32(level))
+    public func ringRange(ring: Int, start: Int, end: Int, level: UInt8) {
+        monome_led_ring_range(monome, UInt32(ring), UInt32(start), UInt32(end), UInt32(level))
     }
 
     // MARK: - Monome: Tilt Commands
-    public func tiltEnable(for sensor: UInt32) {
-        monome_tilt_enable(monome, sensor)
+    public func tiltEnable(for sensor: Int) {
+        monome_tilt_enable(monome, UInt32(sensor))
     }
-    public func tiltDisable(for sensor: UInt32) {
-        monome_tilt_disable(monome, sensor)
+    public func tiltDisable(for sensor: Int) {
+        monome_tilt_disable(monome, UInt32(sensor))
     }
 }
 
@@ -310,11 +310,11 @@ public struct GridEvent: Event {
         return "Monome Grid Event – x:\(x) y:\(y) action: \(action)"
     }
 
-    public var x: UInt32 {
-        return cEvent.pointee.grid.x
+    public var x: Int {
+        return Int(cEvent.pointee.grid.x)
     }
-    public var y: UInt32 {
-        return cEvent.pointee.grid.y
+    public var y: Int {
+        return Int(cEvent.pointee.grid.y)
     }
     public var action: GridEvent.Action {
         return Action(cEvent.pointee.event_type)
@@ -345,11 +345,11 @@ public struct ArcEvent: Event {
         return "Monome Arc Event – number:\(number) delta:\(delta) action:\(action)"
     }
 
-    public var number: UInt32 {
-        return cEvent.pointee.encoder.number
+    public var number: Int {
+        return Int(cEvent.pointee.encoder.number)
     }
-    public var delta: Int32 {
-        return cEvent.pointee.encoder.delta
+    public var delta: Int {
+        return Int(cEvent.pointee.encoder.delta)
     }
     public var action: ArcEvent.Action {
         return Action(cEvent.pointee.event_type)
@@ -376,17 +376,17 @@ public struct TiltEvent: Event {
         return "Monome Tilt Event – sensor:\(sensor) x:\(x) y:\(y) z:\(z)"
     }
 
-    public var sensor: UInt32 {
-        return cEvent.pointee.tilt.sensor
+    public var sensor: Int {
+        return Int(cEvent.pointee.tilt.sensor)
     }
-    public var x: Int32 {
-        return cEvent.pointee.tilt.x
+    public var x: Int {
+        return Int(cEvent.pointee.tilt.x)
     }
-    public var y: Int32 {
-        return cEvent.pointee.tilt.y
+    public var y: Int {
+        return Int(cEvent.pointee.tilt.y)
     }
-    public var z: Int32 {
-        return cEvent.pointee.tilt.z
+    public var z: Int {
+        return Int(cEvent.pointee.tilt.z)
     }
 }
 
