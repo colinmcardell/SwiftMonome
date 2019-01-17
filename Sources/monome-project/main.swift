@@ -1,8 +1,10 @@
 #if os(Linux)
-import Glibc
+    import Glibc
+    srandom(UInt32(time(nil)))
 #else
-import Darwin
+    import Darwin
 #endif
+
 import SwiftMonome
 
 class Main {
