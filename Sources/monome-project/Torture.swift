@@ -67,11 +67,11 @@ extension Torture {
         var req = timespec(tv_sec: 0, tv_nsec: Int(((getRandom() % 100000) + 100)))
         nanosleep(&req, &rem)
     }
-    func getRandom() -> UInt32 {
+    func getRandom() -> Int {
         #if os(Linux)
         return random()
         #else
-        return arc4random()
+        return Int(arc4random())
         #endif
     }
 }
