@@ -24,6 +24,7 @@
 		F72BDB7521C96E01001C2904 /* libmonome.1.4.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F72BDB7421C96E01001C2904 /* libmonome.1.4.2.dylib */; };
 		F72BDB7821C98B8B001C2904 /* Application.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72BDB7621C98A8B001C2904 /* Application.swift */; };
 		F73E9D7521CD66A100716A87 /* Monome.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73E9D7421CD66A100716A87 /* Monome.swift */; };
+		F777F99E21F0F88D0038603F /* EventScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = F777F99D21F0F88D0038603F /* EventScheduler.swift */; };
 		F78911FD21CECF7C000DB0E9 /* Test.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78911FC21CECF7C000DB0E9 /* Test.swift */; };
 		F78911FF21D42F3A000DB0E9 /* Torture.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78911FE21D42F3A000DB0E9 /* Torture.swift */; };
 		OBJ_29 /* SwiftMonome.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_15 /* SwiftMonome.swift */; };
@@ -66,6 +67,7 @@
 		F72BDB7421C96E01001C2904 /* libmonome.1.4.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libmonome.1.4.2.dylib; path = ../../../../../../../usr/local/Cellar/libmonome/1.4.2/lib/libmonome.1.4.2.dylib; sourceTree = "<group>"; };
 		F72BDB7621C98A8B001C2904 /* Application.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Application.swift; sourceTree = "<group>"; };
 		F73E9D7421CD66A100716A87 /* Monome.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Monome.swift; sourceTree = "<group>"; };
+		F777F99D21F0F88D0038603F /* EventScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventScheduler.swift; sourceTree = "<group>"; };
 		F78911FC21CECF7C000DB0E9 /* Test.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Test.swift; sourceTree = "<group>"; };
 		F78911FE21D42F3A000DB0E9 /* Torture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Torture.swift; sourceTree = "<group>"; };
 		OBJ_10 /* Life.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Life.swift; sourceTree = "<group>"; };
@@ -194,6 +196,7 @@
 				OBJ_11 /* Simple.swift */,
 				F78911FC21CECF7C000DB0E9 /* Test.swift */,
 				F78911FE21D42F3A000DB0E9 /* Torture.swift */,
+				F777F99D21F0F88D0038603F /* EventScheduler.swift */,
 			);
 			name = "monome-project";
 			path = "Sources/monome-project";
@@ -328,6 +331,7 @@
 				F72BDB7821C98B8B001C2904 /* Application.swift in Sources */,
 				OBJ_57 /* ConsoleIO.swift in Sources */,
 				F73E9D7521CD66A100716A87 /* Monome.swift in Sources */,
+				F777F99E21F0F88D0038603F /* EventScheduler.swift in Sources */,
 				F78911FD21CECF7C000DB0E9 /* Test.swift in Sources */,
 				OBJ_58 /* Life.swift in Sources */,
 				F78911FF21D42F3A000DB0E9 /* Torture.swift in Sources */,
