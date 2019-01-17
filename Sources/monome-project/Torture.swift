@@ -5,6 +5,7 @@
 
 #if os(Linux)
 import Glibc
+srandom(UInt32(time(nil)))
 #else
 import Darwin
 #endif
@@ -52,7 +53,7 @@ final class Torture: Application {
                 buf.withMemoryRebound(to: UInt8.self, capacity: 2) {
                     monome.row(xOffset: UInt32(y), y: UInt32(w / 8), count: y, data: $0)
                 }
-                monome.set(x: UInt32(w - 1), y: UInt32(y), status: UInt32(arc4random() & 1))
+                monome.set(x: UInt32(w - 1), y: UInt32(y), status: UInt32(random() & 1))
                 randomChill()
             }
             s = (s == 0) ? 1 : 0
@@ -63,7 +64,14 @@ final class Torture: Application {
 extension Torture {
     func randomChill() {
         var rem = timespec(tv_sec: 0, tv_nsec: 0)
-        var req = timespec(tv_sec: 0, tv_nsec: Int(((arc4random() % 100000) + 100)))
+        var req = timespec(tv_sec: 0, tv_nsec: Int(((random() % 100000) + 100)))
         nanosleep(&req, &rem)
+    }
+    func random() -> UInt32 {
+        #if os(Linux)
+            return random()
+        #else
+            return arc4random()
+        #endif
     }
 }
