@@ -64,7 +64,7 @@ final class Torture: Application {
 extension Torture {
     func randomChill() {
         var rem = timespec(tv_sec: 0, tv_nsec: 0)
-        var req = timespec(tv_sec: 0, tv_nsec: Int(((getRandom()% 100000) + 100)))
+        var req = timespec(tv_sec: 0, tv_nsec: Int(((getRandom() % 100000) + 100)))
         nanosleep(&req, &rem)
     }
     func getRandom() -> UInt32 {
