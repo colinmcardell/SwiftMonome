@@ -28,7 +28,7 @@ let package = Package(
             dependencies: ["clibmonome"]
         ),
         .target(
-            name: "monome-project",
+            name: "monome-examples",
             dependencies: ["SwiftMonome"]
         ),
         .testTarget(

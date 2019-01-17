@@ -80,7 +80,7 @@
 		OBJ_9 /* ConsoleIO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsoleIO.swift; sourceTree = "<group>"; };
 		"SwiftMonome::SwiftMonome::Product" /* SwiftMonome.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SwiftMonome.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		"SwiftMonome::SwiftMonomeTests::Product" /* SwiftMonomeTests.xctest */ = {isa = PBXFileReference; lastKnownFileType = file; path = SwiftMonomeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		"SwiftMonome::monome-project::Product" /* monome-project */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; path = "monome-project"; sourceTree = BUILT_PRODUCTS_DIR; };
+		"SwiftMonome::monome-examples::Product" /* monome-examples */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; path = "monome-examples"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -157,7 +157,7 @@
 		OBJ_20 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				"SwiftMonome::monome-project::Product" /* monome-project */,
+				"SwiftMonome::monome-examples::Product" /* monome-examples */,
 				"SwiftMonome::SwiftMonome::Product" /* SwiftMonome.framework */,
 				"SwiftMonome::SwiftMonomeTests::Product" /* SwiftMonomeTests.xctest */,
 			);
@@ -178,14 +178,14 @@
 		OBJ_7 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				OBJ_8 /* monome-project */,
+				OBJ_8 /* monome-examples */,
 				OBJ_13 /* clibmonome */,
 				OBJ_14 /* SwiftMonome */,
 			);
 			name = Sources;
 			sourceTree = SOURCE_ROOT;
 		};
-		OBJ_8 /* monome-project */ = {
+		OBJ_8 /* monome-examples */ = {
 			isa = PBXGroup;
 			children = (
 				F72BDB7621C98A8B001C2904 /* Application.swift */,
@@ -198,8 +198,8 @@
 				F78911FE21D42F3A000DB0E9 /* Torture.swift */,
 				F777F99D21F0F88D0038603F /* EventScheduler.swift */,
 			);
-			name = "monome-project";
-			path = "Sources/monome-project";
+			name = "monome-examples";
+			path = "Sources/monome-examples";
 			sourceTree = SOURCE_ROOT;
 		};
 /* End PBXGroup section */
@@ -252,9 +252,9 @@
 			productName = SwiftMonomePackageDescription;
 			productType = "com.apple.product-type.framework";
 		};
-		"SwiftMonome::monome-project" /* monome-project */ = {
+		"SwiftMonome::monome-examples" /* monome-examples */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = OBJ_53 /* Build configuration list for PBXNativeTarget "monome-project" */;
+			buildConfigurationList = OBJ_53 /* Build configuration list for PBXNativeTarget "monome-examples" */;
 			buildPhases = (
 				OBJ_56 /* Sources */,
 				OBJ_61 /* Frameworks */,
@@ -264,9 +264,9 @@
 			dependencies = (
 				OBJ_63 /* PBXTargetDependency */,
 			);
-			name = "monome-project";
+			name = "monome-examples";
 			productName = monome_project;
-			productReference = "SwiftMonome::monome-project::Product" /* monome-project */;
+			productReference = "SwiftMonome::monome-examples::Product" /* monome-examples */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -293,7 +293,7 @@
 				"SwiftMonome::SwiftPMPackageDescription" /* SwiftMonomePackageDescription */,
 				"SwiftMonome::SwiftMonomePackageTests::ProductTarget" /* SwiftMonomePackageTests */,
 				"SwiftMonome::SwiftMonomeTests" /* SwiftMonomeTests */,
-				"SwiftMonome::monome-project" /* monome-project */,
+				"SwiftMonome::monome-examples" /* monome-examples */,
 			);
 		};
 /* End PBXProject section */
@@ -570,7 +570,7 @@
 				SWIFT_FORCE_DYNAMIC_LINK_STDLIB = YES;
 				SWIFT_FORCE_STATIC_LINK_STDLIB = NO;
 				SWIFT_VERSION = 4.2;
-				TARGET_NAME = "monome-project";
+				TARGET_NAME = "monome-examples";
 			};
 			name = Debug;
 		};
@@ -595,7 +595,7 @@
 				SWIFT_FORCE_DYNAMIC_LINK_STDLIB = YES;
 				SWIFT_FORCE_STATIC_LINK_STDLIB = NO;
 				SWIFT_VERSION = 4.2;
-				TARGET_NAME = "monome-project";
+				TARGET_NAME = "monome-examples";
 			};
 			name = Release;
 		};
@@ -647,7 +647,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		OBJ_53 /* Build configuration list for PBXNativeTarget "monome-project" */ = {
+		OBJ_53 /* Build configuration list for PBXNativeTarget "monome-examples" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				OBJ_54 /* Debug */,

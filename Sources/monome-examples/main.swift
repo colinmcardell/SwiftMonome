@@ -40,7 +40,7 @@ class Main {
             case .close:
                 return "    \(self.rawValue) - Close a connection to a Monome device."
             case .help:
-                return "    \(self.rawValue) - Display `monome-project` usage."
+                return "    \(self.rawValue) - Display `monome-examples` usage."
             case .open:
                 return "    \(self.rawValue) - Open a connection with a Monome device."
             case .quit:
@@ -54,7 +54,7 @@ class Main {
             case .torture:
                 return "    \(self.rawValue) - Load: \(Torture.description())"
             case .usage:
-                return "    \(self.rawValue) - Display `monome-project` usage."
+                return "    \(self.rawValue) - Display `monome-examples` usage."
             case .unknown:
                 return "Unknown option type: \(self.rawValue)"
             }

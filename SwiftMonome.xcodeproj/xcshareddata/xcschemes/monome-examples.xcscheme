@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "SwiftMonome::monome-project"
-               BuildableName = "monome-project"
-               BlueprintName = "monome-project"
+               BlueprintIdentifier = "SwiftMonome::monome-examples"
+               BuildableName = "monome-examples"
+               BlueprintName = "monome-examples"
                ReferencedContainer = "container:SwiftMonome.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -56,9 +56,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "SwiftMonome::monome-project"
-            BuildableName = "monome-project"
-            BlueprintName = "monome-project"
+            BlueprintIdentifier = "SwiftMonome::monome-examples"
+            BuildableName = "monome-examples"
+            BlueprintName = "monome-examples"
             ReferencedContainer = "container:SwiftMonome.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

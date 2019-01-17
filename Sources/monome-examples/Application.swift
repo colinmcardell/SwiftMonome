@@ -23,11 +23,11 @@ class Application: CustomStringConvertible {
     }
 
     func gridEvent(event: GridEvent) {
-        // Override in subclass
+        fatalError("Must override in subclass")
     }
 
     func run() {
-        quit(EXIT_SUCCESS)
+        fatalError("Must override in subclass")
     }
     func quit(_ exitStatus: Int32) {
         monome.clearEventHandlers()
