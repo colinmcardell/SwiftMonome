@@ -4,9 +4,9 @@
 //
 
 #if os(Linux)
-    import Glibc
+import Glibc
 #else
-    import Darwin
+import Darwin
 #endif
 
 import Foundation
@@ -69,9 +69,9 @@ extension Torture {
     }
     func random() -> UInt32 {
         #if os(Linux)
-            return random()
+        return random()
         #else
-            return arc4random()
+        return arc4random()
         #endif
     }
 }

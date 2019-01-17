@@ -3,6 +3,7 @@ import Glibc
 #else
 import Darwin
 #endif
+
 import SwiftMonome
 
 class Application: CustomStringConvertible {
