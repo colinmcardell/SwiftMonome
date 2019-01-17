@@ -40,7 +40,7 @@ final class Simple: Application {
         if rows == 0 {
             rows = 16
         }
-        state = [[UInt8]](repeating: [UInt8](repeating: 0, count: columns), count: rows)
+        state = [[UInt8]](repeating: [UInt8](repeating: 0, count: rows), count: columns)
         monome.all(0)
     }
 
