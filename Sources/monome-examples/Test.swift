@@ -83,13 +83,13 @@ extension Test {
     func testLedRow8(_ status: UInt8) {
         var on = status
         for i in 0..<8 {
-            monome.row(xOffset: 0, y: i, data: [on], shouldReduceBytes: false)
+            monome.row(x: 0, y: i, data: [on], shouldReduceBytes: false)
             chill(16)
             on |= on << 1
         }
 
         for i in 8..<16 {
-            monome.row(xOffset: 0, y: i, data: [on], shouldReduceBytes: false)
+            monome.row(x: 0, y: i, data: [on], shouldReduceBytes: false)
             chill(16)
             on >>= 1
         }
@@ -98,12 +98,12 @@ extension Test {
     func testLedCol8(_ status: UInt8) {
         var on = status
         for i in 0..<8 {
-            monome.column(x: i, yOffset: 0, data: [on], shouldReduceBytes: false)
+            monome.column(x: i, y: 0, data: [on], shouldReduceBytes: false)
             chill(16)
             on |= on << 1
         }
         for i in 8..<16 {
-            monome.column(x: i, yOffset: 0, data: [on], shouldReduceBytes: false)
+            monome.column(x: i, y: 0, data: [on], shouldReduceBytes: false)
             chill(16)
             on >>= 1
         }
@@ -118,7 +118,7 @@ extension Test {
         for i in 0..<16 {
             buf.withMemoryRebound(to: UInt8.self, capacity: 2) {
                 let data: [UInt8] = [UInt8](UnsafeMutableBufferPointer(start: $0, count: 2))
-                monome.row(xOffset: 0, y: i, data: data, shouldReduceBytes: false)
+                monome.row(x: 0, y: i, data: data, shouldReduceBytes: false)
             }
             chill(16)
             buf.pointee |= buf.pointee << 1
@@ -134,7 +134,7 @@ extension Test {
         for i in 0..<16 {
             buf.withMemoryRebound(to: UInt8.self, capacity: 2) {
                 let data: [UInt8] = [UInt8](UnsafeMutableBufferPointer(start: $0, count: 2))
-                monome.column(x: i, yOffset: 0, data: data, shouldReduceBytes: false)
+                monome.column(x: i, y: 0, data: data, shouldReduceBytes: false)
             }
             chill(16)
             buf.pointee |= buf.pointee << 1
@@ -150,7 +150,7 @@ extension Test {
         ]
         var q: Int = 0
         for l in 0..<8 {
-            monome.map(xOffset: ((q & 1) * 8), yOffset: ((q & 2) * 4), data: pattern[q])
+            monome.map(x: ((q & 1) * 8), y: ((q & 2) * 4), data: pattern[q])
             for i in 0..<8 {
                 pattern[q][i] ^= 0xFF
             }
@@ -163,7 +163,7 @@ extension Test {
 
     func fadeOut() {
         var i: Int = 0x10
-        while(i > 0) {
+        while i > 0 {
             i -= 1
             monome.intensity(UInt8(i))
             chill(16)
