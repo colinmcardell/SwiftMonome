@@ -169,7 +169,6 @@ extension Monome {
     }
 
     public func levelSet(x: UInt32, y: UInt32, level: UInt8) {
-        // TODO: Return type (-1 is an error, I think...)
         monome_led_level_set(monome, x, y, UInt32(level))
     }
 
@@ -182,12 +181,10 @@ extension Monome {
     }
 
     public func levelRow(xOffset: UInt32, y: UInt32, count: Int, data: UnsafePointer<UInt8>!) {
-        // TODO: Return type (-1 is an error, I think...)
         monome_led_level_row(monome, xOffset, y, count, data)
     }
 
     public func levelColumn(x: UInt32, yOffset: UInt32, count: Int, data: UnsafePointer<UInt8>!) {
-        // TODO: Return type (-1 is an error, I think...)
         monome_led_level_col(monome, x, yOffset, count, data)
     }
 
@@ -205,17 +202,14 @@ extension Monome {
     }
 
     public func ringRange(ring: UInt32, start: UInt32, end: UInt32, level: UInt8) {
-        // TODO: Return type (-1 is an error, I think...)
         monome_led_ring_range(monome, ring, start, end, UInt32(level))
     }
 
     // MARK: - Monome: Tilt Commands
     public func tiltEnable(for sensor: UInt32) {
-        // TODO: Return type (-1 is an error, I think...)
         monome_tilt_enable(monome, sensor)
     }
     public func tiltDisable(for sensor: UInt32) {
-        // TODO: Return type (-1 is an error, I think...)
         monome_tilt_disable(monome, sensor)
     }
 }
