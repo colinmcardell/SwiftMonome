@@ -58,12 +58,15 @@ final class Test: Application {
 }
 
 extension Test {
+
     static var BPM: Int = 98
+
     func chill(_ speed: Int) {
         var rem = timespec(tv_sec: 0, tv_nsec: 0)
         var req = timespec(tv_sec: 0, tv_nsec: ((60000 / (Test.BPM * speed)) * 1000000))
         nanosleep(&req, &rem)
     }
+
     func testLedOnOff() {
         var s = 2
         while s >= 0 {
@@ -76,49 +79,68 @@ extension Test {
             s -= 1
         }
     }
+
     func testLedRow8(_ status: UInt8) {
         var on = status
         for i in 0..<8 {
-            monome.row(xOffset: 0, y: UInt32(i), count: 1, data: &on)
+            monome.row(xOffset: 0, y: UInt32(i), data: [on], shouldReduceBytes: false)
             chill(16)
             on |= on << 1
         }
 
         for i in 8..<16 {
-            monome.row(xOffset: 0, y: UInt32(i), count: 1, data: &on)
+            monome.row(xOffset: 0, y: UInt32(i), data: [on], shouldReduceBytes: false)
             chill(16)
             on >>= 1
         }
     }
+
     func testLedCol8(_ status: UInt8) {
         var on = status
         for i in 0..<8 {
-            monome.column(x: UInt32(i), yOffset: 0, count: 1, data: &on)
+            monome.column(x: UInt32(i), yOffset: 0, data: [on], shouldReduceBytes: false)
             chill(16)
             on |= on << 1
         }
         for i in 8..<16 {
-            monome.column(x: UInt32(i), yOffset: 0, count: 1, data: &on)
+            monome.column(x: UInt32(i), yOffset: 0, data: [on], shouldReduceBytes: false)
             chill(16)
             on >>= 1
         }
     }
+
     func testLedRow16(_ status: UInt8) {
-        var on = status
+        var buf = UnsafeMutablePointer<UInt16>.allocate(capacity: 1)
+        buf.initialize(to: UInt16(status))
+        defer {
+            buf.deallocate()
+        }
         for i in 0..<16 {
-            monome.row(xOffset: 0, y: UInt32(i), count: 2, data: &on)
+            buf.withMemoryRebound(to: UInt8.self, capacity: 2) {
+                let data: [UInt8] = [UInt8](UnsafeMutableBufferPointer(start: $0, count: 2))
+                monome.row(xOffset: 0, y: UInt32(i), data: data, shouldReduceBytes: false)
+            }
             chill(16)
-            on |= on << 1
+            buf.pointee |= buf.pointee << 1
         }
     }
+
     func testLedCol16(_ status: UInt8) {
-        var on = status
+        var buf = UnsafeMutablePointer<UInt16>.allocate(capacity: 1)
+        buf.initialize(to: UInt16(status))
+        defer {
+            buf.deallocate()
+        }
         for i in 0..<16 {
-            monome.column(x: UInt32(i), yOffset: 0, count: 2, data: &on)
+            buf.withMemoryRebound(to: UInt8.self, capacity: 2) {
+                let data: [UInt8] = [UInt8](UnsafeMutableBufferPointer(start: $0, count: 2))
+                monome.column(x: UInt32(i), yOffset: 0, data: data, shouldReduceBytes: false)
+            }
             chill(16)
-            on |= on << 1
+            buf.pointee |= buf.pointee << 1
         }
     }
+
     func testLedMap() {
         var pattern: [[UInt8]] = [
             [0, 34, 20, 8, 8, 8, 8, 0],         // Y
@@ -138,6 +160,7 @@ extension Test {
             }
         }
     }
+
     func fadeOut() {
         var i: Int = 0x10
         while(i > 0) {
@@ -146,6 +169,7 @@ extension Test {
             chill(16)
         }
     }
+
     func testLedRingSet() {
         var yeah: [UInt8]
         for i in 0..<1024 {

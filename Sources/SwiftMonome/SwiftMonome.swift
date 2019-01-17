@@ -152,16 +152,44 @@ extension Monome {
         monome_led_all(monome, UInt32(status))
     }
 
-    public func map(xOffset: UInt32, yOffset: UInt32, data: UnsafePointer<UInt8>!) {
+    public func map(xOffset: UInt32, yOffset: UInt32, data: [UInt8]) {
         monome_led_map(monome, xOffset, yOffset, data)
     }
 
-    public func column(x: UInt32, yOffset: UInt32, count: Int, data: UnsafePointer<UInt8>!) {
-        monome_led_col(monome, x, yOffset, count, data)
+    /// Set a column by sending either an array of 0s or 1s or a byte buffer.
+    /// The values of the provided data corresponds to the on/off values of the
+    /// LEDs at the provided coordinates.
+    ///
+    /// - Parameters:
+    ///   - x: The `x` coordinate of the row to be rendered.
+    ///   - yOffset: The `y` offset to be applied to the column data.
+    ///   - count: Number of "bits" contained in the data array (aka number of LEDs to set in the column).
+    ///   - data: An array of values, either UInt8 values of 0 or 1, or an actual byte buffer (let data = UInt8(0b010101)). The former being the default, where each element in the array is treated as a bit and the values are packed up into a byte buffer before sending them to the device, the latter being non-default and configurable by setting `shouldReduceBytes` to `false`.
+    ///   - shouldReduceBytes: Optional value that is used to indicate if the `data` passed to this function should be treated as an array of UInt8 with each value either 0 or 1 (which means that it should be reduced to a byte buffer), or if the `data` is already a byte buffer.
+    public func column(x: UInt32, yOffset: UInt32, count: Int, data: [UInt8], shouldReduceBytes: Bool = true) {
+        monome_led_col(monome, x, yOffset, count, shouldReduceBytes ? data.pack() : data)
+    }
+    public func column(x: UInt32, yOffset: UInt32, data: [UInt8], shouldReduceBytes: Bool = true) {
+        let d = shouldReduceBytes ? data.pack() : data
+        column(x: x, yOffset: yOffset, count: d.count, data: d, shouldReduceBytes: false)
     }
 
-    public func row(xOffset: UInt32, y: UInt32, count: Int, data: UnsafePointer<UInt8>!) {
-        monome_led_row(monome, xOffset, y, count, data)
+    /// Set a row by sending either an array of 0s or 1s or a byte buffer. The
+    /// values of the provided data corresponds to the on/off values of the LEDs
+    /// at the provided coordinates.
+    ///
+    /// - Parameters:
+    ///   - xOffset: The `x` offset to be applied to the row data.
+    ///   - y: The `y` coordinate of the row to be rendered.
+    ///   - count: Number of "bits" contained in the data array (aka number of LEDs to set in the column).
+    ///   - data: An array of values, either UInt8 values of 0 or 1, or an actual byte buffer (let data = UInt8(0b010101)). The former being the default, where each element in the array is treated as a bit and the values are packed up into a byte buffer before sending them to the device, the latter being non-default and configurable by setting `shouldReduceBytes` to `false`.
+    ///   - shouldReduceBytes: Optional value that is used to indicate if the `data` passed to this function should be treated as an array of UInt8 with each value either 0 or 1 (which means that it should be reduced to a byte buffer), or if the `data` is already a byte buffer.
+    public func row(xOffset: UInt32, y: UInt32, count: Int, data: [UInt8], shouldReduceBytes: Bool = true) {
+        monome_led_row(monome, xOffset, y, count, shouldReduceBytes ? data.pack() : data)
+    }
+    public func row(xOffset: UInt32, y: UInt32, data: [UInt8], shouldReduceBytes: Bool = true) {
+        let d = shouldReduceBytes ? data.pack() : data
+        row(xOffset: xOffset, y: y, count: d.count, data: data, shouldReduceBytes: false)
     }
 
     public func intensity(_ level: UInt8) {
@@ -176,15 +204,15 @@ extension Monome {
         monome_led_level_all(monome, UInt32(level))
     }
 
-    public func levelMap(xOffset: UInt32, yOffset: UInt32, data: UnsafePointer<UInt8>!) {
+    public func levelMap(xOffset: UInt32, yOffset: UInt32, data: [UInt8]) {
         monome_led_level_map(monome, xOffset, yOffset, data)
     }
 
-    public func levelRow(xOffset: UInt32, y: UInt32, count: Int, data: UnsafePointer<UInt8>!) {
+    public func levelRow(xOffset: UInt32, y: UInt32, count: Int, data: [UInt8]) {
         monome_led_level_row(monome, xOffset, y, count, data)
     }
 
-    public func levelColumn(x: UInt32, yOffset: UInt32, count: Int, data: UnsafePointer<UInt8>!) {
+    public func levelColumn(x: UInt32, yOffset: UInt32, count: Int, data: [UInt8]) {
         monome_led_level_col(monome, x, yOffset, count, data)
     }
 
@@ -197,7 +225,7 @@ extension Monome {
         monome_led_ring_all(monome, ring, UInt32(level))
     }
 
-    public func ringMap(ring: UInt32, levels: UnsafePointer<UInt8>!) {
+    public func ringMap(ring: UInt32, levels: [UInt8]) {
         monome_led_ring_map(monome, ring, levels)
     }
 
@@ -421,5 +449,19 @@ extension UnderlyingEventType {
         case .encoderKeyDown: return MONOME_ENCODER_KEY_DOWN
         case .tilt: return MONOME_TILT
         }
+    }
+}
+
+extension Array where Element == UInt8 {
+    func pack() -> [UInt8] {
+        let numBytes = (count + 7) / 8
+        var bytes = [UInt8](repeating: 0, count: numBytes)
+
+        for (index, value) in self.enumerated() {
+            if value == 1 {
+                bytes[index / 8] += UInt8(1 << (index % 8))
+            }
+        }
+        return bytes
     }
 }
