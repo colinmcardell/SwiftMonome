@@ -220,6 +220,13 @@ timer.resume()
 
 A number of Swift reimplementations of the `libmonome` examples are provided that can be used as a reference, [here](https://github.com/colinmcardell/SwiftMonome/tree/master/Sources/monome-examples).
 
+You can run these examples:
+
+1) Clone this repository - `git clone https://github.com/colinmcardell/SwiftMonome.git`
+2) `cd SwiftMonome`
+3) `make run` (assuming you have all of the [prerequisites](#prerequisites) satisfied)
+4) Follow the on-screen usage instructions
+
 ## Contribution
 
 Feedback, comments, bug reports are welcome. Please file an issue or make a PR.
