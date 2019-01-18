@@ -1,6 +1,7 @@
 //
 //  Torture.swift
 //  Write a ton of data to a monome.
+//  A reimplementation of `torture.c` from libmonome.
 //  SwiftMonome - monome-examples
 //
 //  Colin McArdell <colin@colinmcardell.com>

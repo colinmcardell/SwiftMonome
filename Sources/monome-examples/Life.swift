@@ -1,6 +1,7 @@
 //
 //  Life.swift
 //  Conway's Game of Life.
+//  A reimplementation of `life.c` from libmonome.
 //  SwiftMonome - monome-examples
 //
 //  Colin McArdell <colin@colinmcardell.com>

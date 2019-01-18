@@ -1,6 +1,7 @@
 //
 //  Test.swift
 //  Basic program to test all of the output commands to the monome.
+//  A reimplementation of `test.c` from libmonome.
 //  SwiftMonome - monome-examples
 //
 //  Colin McArdell <colin@colinmcardell.com>

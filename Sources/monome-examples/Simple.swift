@@ -1,6 +1,7 @@
 //
 //  Simple.swift
 //  Press a button to toggle it!
+//  A reimplementation of `simple.c` from libmonome.
 //  SwiftMonome - monome-examples
 //
 //  Colin McArdell <colin@colinmcardell.com>
