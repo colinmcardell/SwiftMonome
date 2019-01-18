@@ -298,16 +298,25 @@ extension Event {
 
 /// Grid specific event
 public struct GridEvent: Event {
-    public enum Action {
+    public enum Action: CustomStringConvertible {
         case buttonDown
         case buttonUp
+
+        public var description: String {
+            switch self {
+            case .buttonDown:
+                return "Button Down"
+            case .buttonUp:
+                return "Button Up"
+            }
+        }
     }
     public init(_ event: UnsafePointer<monome_event_t>) {
         self.cEvent = event
     }
     public var cEvent: UnsafePointer<monome_event_t>
     public var description: String {
-        return "Monome Grid Event – x:\(x) y:\(y) action: \(action)"
+        return "Monome Grid Event – x: \(x), y: \(y), action: \(action)"
     }
 
     public var x: Int {
@@ -332,17 +341,28 @@ extension GridEvent.Action {
 
 /// Arc specific event
 public struct ArcEvent: Event {
-    public enum Action {
+    public enum Action: CustomStringConvertible {
         case delta
         case keyUp
         case keyDown
+
+        public var description: String {
+            switch self {
+            case .delta:
+                return "Delta"
+            case .keyUp:
+                return "Key Up"
+            case .keyDown:
+                return "Key Down"
+            }
+        }
     }
     public init(_ event: UnsafePointer<monome_event_t>) {
         self.cEvent = event
     }
     public var cEvent: UnsafePointer<monome_event_t>
     public var description: String {
-        return "Monome Arc Event – number:\(number) delta:\(delta) action:\(action)"
+        return "Monome Arc Event – number: \(number), delta: \(delta), action: \(action)"
     }
 
     public var number: Int {
