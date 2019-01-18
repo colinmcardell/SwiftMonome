@@ -6,13 +6,11 @@ SwiftMonome is a package that wraps around the [`libmonome`](https://github.com/
 
 Tested and working on MacOS and Linux.
 
-----------------------------------------
 ## Prerequisites
-----------------------------------------
 
 ### [libmonome](https://github.com/monome/libmonome):
 
-| OS           | Information                     | Instructions                                        |
+| Platform     | Information                     | Instructions                                        |
 | ------------ | ------------------------------- | --------------------------------------------------- |
 | Mac OS       | Use [Homebrew](https://brew.sh) | `brew install libmonome`                            |
 | Linux        | Manual Compile Recommended      | More info [here](https://monome.org/docs/linux/)    |
@@ -20,14 +18,13 @@ Tested and working on MacOS and Linux.
 
 ### [Swift](https://swift.org):
 
-| OS           | Information                                                     | Instructions                                                |
+| Platform     | Information                                                     | Instructions                                                |
 | ------------ | --------------------------------------------------------------- | ----------------------------------------------------------- |
 | Mac OS       | Comes with Xcode                                                | Get [Xcode](https://itunes.apple.com/app/xcode/id497799835) |
 | Linux        | A good number of official distributions                         | Download [here](https://swift.org/download/)                |
 | Raspberry Pi | Compiling takes forever, try an unofficial pre-compiled version | Download [here](https://github.com/futurejones/swift-arm64) |
 
 ## Install & Connect
-----------------------------------------
 
 Add `SwiftMonome` to you `Package.swift` as a dependency:
 
@@ -40,7 +37,7 @@ import PackageDescription
 let package = Package(
     // ...
     dependencies: [
-        .Package(url: "https://github.com/colinmcardell/SwiftMonome.git", from: "0.0.3")
+        .Package(url: "https://github.com/colinmcardell/SwiftMonome.git", from: "0.0.5")
     ],
     // ...
     targets: [
@@ -56,12 +53,16 @@ Basic connection to an attached Monome device:
 import SwiftMonome
 
 // Monome? Failable Initializer, optional value of Monome or nil
+
+// Linux device path
 let monome: Monome? = Monome("/dev/ttyUSB0")
 
 // or
+// Mac OS device path
 let monome: Monome? = Monome("/dev/cu.usbserial-m1000286")
 
 // or
+// OSC path (serialoscd)
 let monome: Monome? = Monome("osc.udp://127.0.0.1:9000/monome")
 
 // or
@@ -75,8 +76,17 @@ guard let monome = Monome("/dev/ttyUSB0") else {
 }
 ```
 
+```swift
+// Setting the Monome rotation
+
+monome?.rotation = .left
+monome?.rotation = .bottom
+monome?.rotation = .right
+monome?.rotation = .top
+```
+
 ## Usage Basics
-----------------------------------------
+
 Here are some basic examples on how to communicate to a Monome device with SwiftMonome. These examples all assume an optional constant `let monome: Monome? = Monome()` described in the section above on connecting to a Monome device... 
 
 For additional examples look in the [`/Sources/monome-examples` folder](https://github.com/colinmcardell/SwiftMonome/tree/master/Sources/monome-examples) of this repo.
@@ -137,7 +147,7 @@ displayHello()
 
 ### Events
 
-Events are handled by closures or delegation.
+Events are handled by closures and/or delegation.
 
 ```swift
 // Adding a event handling closure to respond to grid button events
@@ -178,7 +188,7 @@ class MonomeController: MonomeGridEventDelegate {
 }
 ```
 
-Events that have been triggered need to be driven by a timer, periodically calling `eventHandleNext()`.
+Events that have been triggered need to be driven by a periodic call to `eventHandleNext()`.
 
 ```swift
 // Driving the events of the connected Monome device
@@ -205,16 +215,13 @@ timer.resume()
 ```
 
 ## More Examples
-----------------------------------------
 
 A number of Swift reimplementations of the `libmonome` examples are provided that can be used as a reference, [here](https://github.com/colinmcardell/SwiftMonome/tree/master/Sources/monome-examples).
 
 ## Contribution
-----------------------------------------
 
-Feedback and comments are welcome. Please file an issue or make a PR.
+Feedback, comments, bug reports are welcome. Please file an issue or make a PR.
 
 Thanks!
-
 
 Colin McArdell - colin(at)colinmcardell(dot)com
