@@ -1,3 +1,10 @@
+//
+//  Application.swift
+//  SwiftMonome - monome-examples
+//
+//  Colin McArdell <colinmcardell@gmail.com>
+//
+
 #if os(Linux)
 import Glibc
 #else

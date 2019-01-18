@@ -1,6 +1,9 @@
 //
 //  Torture.swift
-//  Write a ton of data to a monome
+//  Write a ton of data to a monome.
+//  SwiftMonome - monome-examples
+//
+//  Colin McArdell <colinmcardell@gmail.com>
 //
 
 #if os(Linux)

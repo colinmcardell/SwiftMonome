@@ -1,3 +1,10 @@
+//
+//  EventScheduler.swift
+//  SwiftMonome - monome-examples
+//
+//  Colin McArdell <colinmcardell@gmail.com>
+//
+
 import Foundation
 
 class EventScheduler {

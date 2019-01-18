@@ -1,8 +1,11 @@
 //
 //  Simple.swift
-//
 //  Press a button to toggle it!
+//  SwiftMonome - monome-examples
 //
+//  Colin McArdell <colinmcardell@gmail.com>
+//
+
 #if os(Linux)
 import Glibc
 #else

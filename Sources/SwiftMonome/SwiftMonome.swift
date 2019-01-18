@@ -1,3 +1,9 @@
+//
+//  SwiftMonome.swift
+//
+//  Colin McArdell <colinmcardell@gmail.com>
+//
+
 import clibmonome
 
 // MARK: - Event Callbacks

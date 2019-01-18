@@ -1,3 +1,10 @@
+//
+//  main.swift
+//  SwiftMonome - monome-examples
+//
+//  Colin McArdell <colinmcardell@gmail.com>
+//
+
 #if os(Linux)
 import Glibc
 srandom(UInt32(time(nil)))

@@ -1,6 +1,15 @@
+//
+//  Monome.swift
+//  SwiftMonome - monome-examples
+//
+//  Colin McArdell <colinmcardell@gmail.com>
+//
+
 import SwiftMonome
 import Foundation
 
+
+// MARK: - Extension to Monome adding the ability to clear all event handling closures in one function call
 extension Monome {
 
     func clearEventHandlers() {
@@ -10,6 +19,8 @@ extension Monome {
     }
 }
 
+
+/// EventScheduler that periodically calls an instance of the Monome classes eventHandleNext() func
 class MonomeEventScheduler: EventScheduler {
 
     let monome: Monome

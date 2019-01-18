@@ -1,8 +1,11 @@
 //
 //  Life.swift
+//  Conway's Game of Life.
+//  SwiftMonome - monome-examples
 //
-//  Conway's Game of Life
+//  Colin McArdell <colinmcardell@gmail.com>
 //
+
 #if os(Linux)
 import Glibc
 #else
