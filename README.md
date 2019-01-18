@@ -26,7 +26,7 @@ Tested and working on MacOS and Linux.
 
 ## Install & Connect
 
-Add `SwiftMonome` to you `Package.swift` as a dependency:
+Add `SwiftMonome` to your `Package.swift` as a dependency:
 
 ```swift
 // Package.swift
@@ -74,15 +74,6 @@ let monome: Monome? = Monome()
 guard let monome = Monome("/dev/ttyUSB0") else {
     fatalError("Error connecting to Monome device.")
 }
-```
-
-```swift
-// Setting the Monome rotation
-
-monome?.rotation = .left
-monome?.rotation = .bottom
-monome?.rotation = .right
-monome?.rotation = .top
 ```
 
 ## Usage Basics
@@ -143,6 +134,17 @@ func displayHello() {
 }
 
 displayHello()
+```
+
+### Rotation
+
+```swift
+// Setting the Monome rotation (where the USB cable is)
+
+monome?.rotation = .left // Default
+monome?.rotation = .bottom
+monome?.rotation = .right
+monome?.rotation = .top
 ```
 
 ### Events
