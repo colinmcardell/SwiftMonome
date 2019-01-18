@@ -1,7 +1,7 @@
 //
 //  SwiftMonome.swift
 //
-//  Colin McArdell <colinmcardell@gmail.com>
+//  Colin McArdell <colin@colinmcardell.com>
 //
 
 import clibmonome

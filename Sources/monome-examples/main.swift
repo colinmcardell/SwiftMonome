@@ -2,7 +2,7 @@
 //  main.swift
 //  SwiftMonome - monome-examples
 //
-//  Colin McArdell <colinmcardell@gmail.com>
+//  Colin McArdell <colin@colinmcardell.com>
 //
 
 #if os(Linux)
